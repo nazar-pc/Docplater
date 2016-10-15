@@ -12,6 +12,7 @@
   Event = cs.Event;
   Polymer({
     is: 'docplater-document-parameter',
+    behaviors: [cs.Docplater.behaviors.document, cs.Docplater.behaviors.document_clause],
     hostAttributes: {
       contenteditable: 'false',
       tabindex: 0
