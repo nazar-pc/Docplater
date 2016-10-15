@@ -1,0 +1,20 @@
+{
+	"package"       : "Docplater_app",
+	"category"      : "modules",
+	"version"       : "0.1.0+build-1",
+	"description"   : "Main Docplater UI",
+	"author"        : "Nazar Mokrynskyi",
+	"license"       : "AGPL-3.0",
+	"assets"        : {
+		"Docplater_app" : "*"
+	},
+	"provide"       : "docplater_app",
+	"require"       : [
+		"System>=6.25",
+		"System<7.0",
+		"Composer_assets"
+	],
+	"require_bower" : {
+		"scribe" : "^3.2"
+	}
+}
