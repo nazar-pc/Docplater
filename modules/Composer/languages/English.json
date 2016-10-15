@@ -1,0 +1,16 @@
+{
+	"composer_" : {
+		"force_update"          : "Force update",
+		"updated_successfully"  : "Updated successfully",
+		"update_failed"         : "Update failed",
+		"dependencies_conflict" : "Update failed, dependencies conflict",
+		"last_log"              : "Log of last execution:",
+		"composer_updating"     : "Composer updating (might take few minutes)",
+		"general"               : "General",
+		"auth_json"             : "auth.json",
+		"auth_json_contents"    : "auth.json contents:",
+		"save"                  : "Save",
+		"save_info"             : "Save changes",
+		"changes_saved"         : "Changes saved"
+	}
+}

@@ -1,0 +1,133 @@
+<?php
+/**
+ * @package   CleverStyle Framework
+ * @author    Nazar Mokrynskyi <nazar@mokrynskyi.com>
+ * @copyright Copyright (c) 2011-2016, Nazar Mokrynskyi
+ * @license   MIT License, see license.txt
+ */
+namespace cs\User;
+use cs\User;
+
+/**
+ * Trait that contains all methods from <i>>cs\User</i> for working with user groups
+ *
+ * @property int              $id
+ * @property \cs\Cache\Prefix $cache
+ *
+ * @method \cs\DB\_Abstract db()
+ * @method \cs\DB\_Abstract db_prime()
+ */
+trait Group {
+	/**
+	 * Add user's groups
+	 *
+	 * @param int|int[] $group Group id
+	 * @param false|int $user  If not specified - current user assumed
+	 *
+	 * @return bool
+	 */
+	public function add_groups ($group, $user = false) {
+		$groups = $this->get_groups($user) ?: [];
+		foreach ((array)_int($group) as $g) {
+			$groups[] = $g;
+		}
+		return $this->set_groups($groups, $user);
+	}
+	/**
+	 * Get user's groups
+	 *
+	 * @param false|int $user If not specified - current user assumed
+	 *
+	 * @return false|int[]
+	 */
+	public function get_groups ($user = false) {
+		$user = (int)$user ?: $this->id;
+		if (!$user || $user == User::GUEST_ID) {
+			return false;
+		}
+		return $this->cache->get(
+			"groups/$user",
+			function () use ($user) {
+				return _int(
+					$this->db()->qfas(
+						"SELECT `group`
+							FROM `[prefix]users_groups`
+							WHERE `id` = '$user'
+							ORDER BY `priority` ASC"
+					) ?: []
+				);
+			}
+		);
+	}
+	/**
+	 * Set user's groups
+	 *
+	 * @param int[]     $groups
+	 * @param false|int $user
+	 *
+	 * @return bool
+	 */
+	public function set_groups ($groups, $user = false) {
+		$user = (int)$user ?: $this->id;
+		if (!$user || $user == User::GUEST_ID) {
+			return false;
+		}
+		if (!$groups) {
+			return (bool)$this->db_prime()->q(
+				"DELETE FROM `[prefix]users_groups`
+				WHERE
+					`id`	='$user'"
+			);
+		}
+		$groups          = _int($groups);
+		$groups_imploded = implode(', ', $groups);
+		$return          = $this->db_prime()->q(
+			"DELETE FROM `[prefix]users_groups`
+			WHERE
+				`id`	= '$user' AND
+				`group`	NOT IN ($groups_imploded)"
+		);
+		unset($groups_imploded);
+		$insert_update = [];
+		foreach ($groups as $priority => $group) {
+			$insert_update[] = [$group, $priority];
+		}
+		$return =
+			$return &&
+			$this->db_prime()->insert(
+				"REPLACE INTO `[prefix]users_groups`
+					(
+						`id`,
+						`group`,
+						`priority`
+					) VALUES (
+						'$user',
+						'%d',
+						'%d'
+					)",
+				$insert_update
+			);
+		unset($insert_update);
+		$Cache = $this->cache;
+		unset(
+			$Cache->{"groups/$user"},
+			$Cache->{"permissions/$user"}
+		);
+		return $return;
+	}
+	/**
+	 * Delete user's groups
+	 *
+	 * @param int|int[] $group Group id
+	 * @param false|int $user  If not specified - current user assumed
+	 *
+	 * @return bool
+	 */
+	public function del_groups ($group, $user = false) {
+		$groups = array_diff(
+			$this->get_groups($user) ?: [],
+			(array)_int($group)
+		);
+		return $this->set_groups($groups, $user);
+	}
+}

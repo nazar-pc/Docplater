@@ -1,0 +1,26 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @package   CleverStyle Framework
+ * @author    Nazar Mokrynskyi <nazar@mokrynskyi.com>
+ * @copyright Copyright (c) 2016, Nazar Mokrynskyi
+ * @license   MIT License, see license.txt
+ */
+$_GET = [];
+foreach (array_slice($argv, 2) as $q) {
+	list($key, $value) = explode('=', $q, 2) + [1 => 1];
+	$_GET[$key] = $value;
+}
+$path = explode(':', @$argv[1] ?: 'help:System');
+if (!isset($path[1])) {
+	array_unshift($path, 'get');
+}
+$path[0] = strtoupper($path[0]);
+$_SERVER = [
+	'REQUEST_METHOD' => $path[0],
+	'REQUEST_URI'    => '/cli/'.ltrim($path[1], '/'),
+	'CLI'            => true
+];
+unset($q, $key, $value, $path);
+require_once __DIR__.'/core/thirdparty/cli/cli.php'; //Inclusion of php-cli-tools wrappers functions
+require_once __DIR__.'/index.php';

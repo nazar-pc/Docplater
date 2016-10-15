@@ -1,0 +1,53 @@
+/**
+ * @package    CleverStyle Framework
+ * @subpackage CleverStyle theme
+ * @author     Nazar Mokrynskyi <nazar@mokrynskyi.com>
+ * @copyright  Copyright (c) 2011-2016, Nazar Mokrynskyi
+ * @license    MIT License, see license.txt
+ */
+
+//Header
+body > header {
+	background : #f5f5f5;
+
+	> div {
+		display     : flex;
+		align-items : center;
+
+		> {
+			* {
+				vertical-align : middle;
+			}
+
+			a {
+				margin : 0 1em;
+			}
+
+			nav:first-of-type {
+				display    : inline-block;
+				flex       : 1;
+				flex-basis : 0.000000001px;
+				font-size  : 1.1em;
+
+				> a {
+					display     : inline-block;
+					line-height : 48px;
+					padding     : 0 1em;
+
+					&:hover,
+					&:focus {
+						background-color : rgba(0, 0, 0, .1);
+					}
+				}
+			}
+		}
+	}
+
+	> hr {
+		margin : 0;
+	}
+
+	> nav {
+		height : 33px;
+	}
+}

@@ -1,0 +1,16 @@
+{
+	"composer_" : {
+		"force_update"          : "Примусове оновлення",
+		"updated_successfully"  : "Оновлено успішно",
+		"update_failed"         : "Оновлення не вдалося",
+		"dependencies_conflict" : "Оновлення не вдалося, конфлікт залежностей",
+		"last_log"              : "Журнал останнього запуску:",
+		"composer_updating"     : "Оновлення composer (може тривати кілька хвилин)",
+		"general"               : "Загальне",
+		"auth_json"             : "auth.json",
+		"auth_json_contents"    : "Вміст auth.json:",
+		"save"                  : "Зберегти",
+		"save_info"             : "Зберегти зміни",
+		"changes_saved"         : "Зміни збережені"
+	}
+}

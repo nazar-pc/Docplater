@@ -1,0 +1,10 @@
+{
+	"bower-asset/iron-flex-layout" : "*",
+	"bower-asset/html.sortable"    : "*",
+	"bower-asset/jssha"            : "*",
+	"bower-asset/polymer"          : "*",
+	"bower-asset/webcomponentsjs"  : "*",
+	"npm-asset/jssha"              : "*",
+	"npm-asset/@polymer/polymer"   : "*",
+	"npm-asset/webcomponents.js"   : "*"
+}

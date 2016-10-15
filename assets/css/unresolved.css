@@ -1,0 +1,26 @@
+/**
+ * @package   CleverStyle Framework
+ * @author    Nazar Mokrynskyi <nazar@mokrynskyi.com>
+ * @copyright Copyright (c) 2015-2016, Nazar Mokrynskyi
+ * @license   MIT License, see license.txt
+ */
+body[unresolved-transition] {
+	transition : opacity ease-in .2s !important;
+}
+
+body[unresolved] {
+	cursor  : wait;
+	opacity : 0;
+}
+
+body[cs-unresolved-transition] :unresolved,
+body[cs-unresolved-transition] [is]:not([cs-resolved]) {
+	transition  : opacity ease-in .1s !important;
+	will-change : opacity;
+}
+
+body[cs-unresolved] :unresolved,
+body[cs-unresolved] [is]:not([cs-resolved]) {
+	cursor  : wait;
+	opacity : 0;
+}
