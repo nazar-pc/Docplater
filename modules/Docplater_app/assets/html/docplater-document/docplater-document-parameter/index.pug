@@ -1,5 +1,6 @@
 dom-module#docplater-document-parameter
 	link(rel="import" href="style.css" type="css")
 	template
-		| @[[name]]
+		div(hidden="[[preview]]") @[[name]]
+		div(hidden="[[!preview]]") [[value]]
 	script(src="script.js")

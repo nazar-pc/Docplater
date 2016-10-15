@@ -19,13 +19,30 @@ function find_parent (element, selector)
 	null
 
 cs.{}Docplater.{}behaviors
-	..document	=
+	..document =
 		properties	:
 			document	: Object
 		attached	: !->
 			@set('document', find_parent(@, 'docplater-document'))
-	..document_clause	=
+	..document_clause =
 		properties	:
 			clause	: Object
 		attached	: !->
 			@set('clause', find_parent(@, 'docplater-document-clause'))
+	..parameters =
+		properties	:
+			parameters	:
+				notify	: true
+				type	: Array
+		get_parameter : (name) ->
+			for parameter in @parameters
+				if parameter.name == name
+					return parameter
+			return null
+	..when_ready =
+		created : !->
+			@when_ready = new Promise (@_when_ready_resolve) !~>
+		attached : !->
+			if @_when_ready_resolve
+				@_when_ready_resolve()
+				delete @_when_ready_resolve

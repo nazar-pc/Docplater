@@ -7,9 +7,9 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Parameter, Event;
-  Parameter = cs.Docplater.Parameter;
+  var Event, Parameter;
   Event = cs.Event;
+  Parameter = cs.Docplater.Parameter;
   Polymer({
     is: 'docplater-document-parameter',
     behaviors: [cs.Docplater.behaviors.document, cs.Docplater.behaviors.document_clause],
@@ -18,11 +18,14 @@
       tabindex: 0
     },
     properties: {
+      absolute_id: String,
       highlight: {
         reflectToAttribute: true,
         type: Boolean
       },
-      name: String
+      name: String,
+      preview: false,
+      value: String
     },
     listeners: {
       'focus': '_focus_in',
@@ -30,25 +33,48 @@
     },
     created: function(){
       this._highlighting = this._highlighting.bind(this);
-      Event.on('dockplater/property/highlight', this._highlighting);
+      this._set_preview = this._set_preview.bind(this);
+      this._update = this._update.bind(this);
+      Event.on('dockplater/parameter/highlight', this._highlighting);
+      Event.on('dockplater/document/preview', this._set_preview);
     },
     attached: function(){
       this.name = this.textContent.trim();
+      this.document.when_ready.then(this._update);
+    },
+    _update: function(){
+      var parameter, name;
+      this.absolute_id = this.document.hash + '/' + this.name;
+      parameter = this.document.get_parameter(this.name);
+      if (this.clause) {
+        parameter = this.clause.get_parameter(this.name);
+        if (parameter && parameter.value.indexOf('@') === 0) {
+          name = parameter.value && parameter.value.substring(1);
+          this.absolute_id = this.document.hash + '/' + name;
+          parameter = this.document.get_parameter(name);
+        } else {
+          this.absolute_id = this.document.hash + '/' + this.clause.hash + '/' + name;
+        }
+      }
+      this.value = parameter.value || parameter.default_value;
     },
     _focus_in: function(){
-      Event.fire('dockplater/property/highlight', {
-        name: this.name
+      Event.fire('dockplater/parameter/highlight', {
+        absolute_id: this.absolute_id
       });
     },
     _focus_out: function(){
-      Event.fire('dockplater/property/highlight');
+      Event.fire('dockplater/parameter/highlight');
     },
     _highlighting: function(arg$){
-      var name;
+      var absolute_id;
       if (arg$ != null) {
-        name = arg$.name;
+        absolute_id = arg$.absolute_id;
       }
-      this.highlight = name === this.name;
+      this.highlight = absolute_id === this.absolute_id;
+    },
+    _set_preview: function(arg$){
+      this.preview = arg$.preview;
     }
   });
 }).call(this);

@@ -40,4 +40,36 @@
       this.set('clause', find_parent(this, 'docplater-document-clause'));
     }
   };
+  x$.parameters = {
+    properties: {
+      parameters: {
+        notify: true,
+        type: Array
+      }
+    },
+    get_parameter: function(name){
+      var i$, ref$, len$, parameter;
+      for (i$ = 0, len$ = (ref$ = this.parameters).length; i$ < len$; ++i$) {
+        parameter = ref$[i$];
+        if (parameter.name === name) {
+          return parameter;
+        }
+      }
+      return null;
+    }
+  };
+  x$.when_ready = {
+    created: function(){
+      var this$ = this;
+      this.when_ready = new Promise(function(_when_ready_resolve){
+        this$._when_ready_resolve = _when_ready_resolve;
+      });
+    },
+    attached: function(){
+      if (this._when_ready_resolve) {
+        this._when_ready_resolve();
+        delete this._when_ready_resolve;
+      }
+    }
+  };
 }).call(this);
