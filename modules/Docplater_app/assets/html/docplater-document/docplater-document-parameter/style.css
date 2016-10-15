@@ -1,0 +1,1 @@
+:host{box-sizing:border-box;color:blue;display:inline-block}:host(:focus){outline:1px dotted blue}:host([highlight]){background:yellow}

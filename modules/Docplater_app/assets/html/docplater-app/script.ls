@@ -6,5 +6,5 @@
  * @license   AGPL-3.0, see license.txt
  */
 Polymer(
-	'is'	: 'docplater-app'
+	is	: 'docplater-app'
 )
