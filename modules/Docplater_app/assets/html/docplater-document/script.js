@@ -12,8 +12,9 @@
   Parameter = cs.Docplater.Parameter;
   Polymer({
     is: 'docplater-document',
-    behaviors: [cs.Docplater.behaviors.parameters, cs.Docplater.behaviors.when_ready],
+    behaviors: [cs.Docplater.behaviors.parameters, cs.Docplater.behaviors['this'], cs.Docplater.behaviors.when_ready],
     properties: {
+      clauses: Array,
       hash: '43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008',
       preview: false
     },
@@ -35,6 +36,11 @@
           type: Parameter.TYPE_TEXT
         })
       ];
+    },
+    refresh_clauses: function(){
+      var clauses;
+      clauses = this.$.content.querySelectorAll('docplater-document-clause');
+      this.set('clauses', Array.prototype.slice.call(clauses));
     },
     _toggle_preview: function(){
       this.preview = !this.preview;

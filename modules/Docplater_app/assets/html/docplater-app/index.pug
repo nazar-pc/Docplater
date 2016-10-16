@@ -1,4 +1,6 @@
 dom-module#docplater-app
+	link(rel="import" href="style.css" type="css")
 	template
-		docplater-document
+		docplater-document(this="{{document}}")
+		docplater-document-parameters-panel(document="[[document]]")
 	script(src="script.js")

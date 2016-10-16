@@ -15,7 +15,7 @@
 !function Parameter (args)
 	if @ == window
 		return new Parameter(args)
-	{@name, @type, @value, @default_value} = args
+	{@name, @type, @value = '', @default_value = ''} = args
 Parameter::
 	..TYPE_STRING	= 0
 	..TYPE_NUMBER	= 1

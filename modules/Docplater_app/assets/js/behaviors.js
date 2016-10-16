@@ -47,6 +47,7 @@
         type: Array
       }
     },
+    observers: ['_parameter_changed(parameters.*)'],
     get_parameter: function(name){
       var i$, ref$, len$, parameter;
       for (i$ = 0, len$ = (ref$ = this.parameters).length; i$ < len$; ++i$) {
@@ -56,6 +57,55 @@
         }
       }
       return null;
+    },
+    _parameter_changed: function(){
+      var i$, ref$, len$, parameter;
+      for (i$ = 0, len$ = (ref$ = this.parameters).length; i$ < len$; ++i$) {
+        parameter = ref$[i$];
+        this._update_parameter(parameter);
+      }
+    },
+    _update_parameter: function(parameter){
+      var value, this$ = this;
+      if (!this.document) {
+        parameter.absolute_id = this.hash + '/' + parameter.name;
+        parameter.real_value = this._parameter_get_real_value(parameter);
+      } else {
+        parameter = this.get_parameter(parameter.name);
+        value = parameter.value || parameter.default_value;
+        this.document.when_ready.then(function(){
+          var name;
+          if (parameter && value && value.indexOf('@') === 0) {
+            name = value.substring(1);
+            parameter.absolute_id = this$.document.hash + '/' + name;
+            parameter.real_value = this$._parameter_get_real_value(this$.document.get_parameter(name));
+          } else {
+            parameter.absolute_id = this$.document.hash + '/' + this$.hash + '/' + parameter.name;
+            parameter.real_value = this$._parameter_get_real_value(parameter);
+          }
+        });
+      }
+    },
+    _parameter_get_real_value: function(parameter){
+      if (parameter.value.length) {
+        return parameter.value;
+      } else {
+        return parameter.default_value;
+      }
+    }
+  };
+  x$['this'] = {
+    properties: {
+      'this': {
+        notify: true,
+        readOnly: true,
+        type: Object
+      }
+    },
+    attached: function(){
+      if (!this['this']) {
+        this._setThis(this);
+      }
     }
   };
   x$.when_ready = {
@@ -67,7 +117,7 @@
     },
     attached: function(){
       if (this._when_ready_resolve) {
-        this._when_ready_resolve();
+        this._when_ready_resolve(this);
         delete this._when_ready_resolve;
       }
     }

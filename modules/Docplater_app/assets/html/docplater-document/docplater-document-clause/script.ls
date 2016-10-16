@@ -22,4 +22,7 @@ Polymer(
 			Parameter({name: 'company', type: Parameter.TYPE_STRING, value: '@company_name'})
 			Parameter({name: 'company_location', type: Parameter.TYPE_STRING})
 		]
+		@document.refresh_clauses()
+	detached : !->
+		@document.refresh_clauses()
 )

@@ -16,10 +16,11 @@
    */
   var x$;
   function Parameter(args){
+    var ref$;
     if (this === window) {
       return new Parameter(args);
     }
-    this.name = args.name, this.type = args.type, this.value = args.value, this.default_value = args.default_value;
+    this.name = args.name, this.type = args.type, this.value = (ref$ = args.value) != null ? ref$ : '', this.default_value = (ref$ = args.default_value) != null ? ref$ : '';
   }
   x$ = Parameter.prototype;
   x$.TYPE_STRING = 0;

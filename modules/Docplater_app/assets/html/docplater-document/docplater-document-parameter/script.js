@@ -34,33 +34,15 @@
     created: function(){
       this._highlighting = this._highlighting.bind(this);
       this._set_preview = this._set_preview.bind(this);
-      this._update = this._update.bind(this);
       Event.on('dockplater/parameter/highlight', this._highlighting);
       Event.on('dockplater/document/preview', this._set_preview);
     },
     attached: function(){
       this.name = this.textContent.trim();
-      this.document.when_ready.then(this._update);
-    },
-    _update: function(){
-      var parameter, name;
-      this.absolute_id = this.document.hash + '/' + this.name;
-      parameter = this.document.get_parameter(this.name);
-      if (this.clause) {
-        parameter = this.clause.get_parameter(this.name);
-        if (parameter && parameter.value.indexOf('@') === 0) {
-          name = parameter.value && parameter.value.substring(1);
-          this.absolute_id = this.document.hash + '/' + name;
-          parameter = this.document.get_parameter(name);
-        } else {
-          this.absolute_id = this.document.hash + '/' + this.clause.hash + '/' + name;
-        }
-      }
-      this.value = parameter.value || parameter.default_value;
     },
     _focus_in: function(){
       Event.fire('dockplater/parameter/highlight', {
-        absolute_id: this.absolute_id
+        absolute_id: (this.clause || this.document).get_parameter(this.name).absolute_id
       });
     },
     _focus_out: function(){
@@ -71,10 +53,15 @@
       if (arg$ != null) {
         absolute_id = arg$.absolute_id;
       }
-      this.highlight = absolute_id === this.absolute_id;
+      this.highlight = absolute_id === (this.clause || this.document).get_parameter(this.name).absolute_id;
     },
     _set_preview: function(arg$){
-      this.preview = arg$.preview;
+      var preview;
+      preview = arg$.preview;
+      if (preview) {
+        this.value = (this.clause || this.document).get_parameter(this.name).real_value;
+      }
+      this.preview = preview;
     }
   });
 }).call(this);

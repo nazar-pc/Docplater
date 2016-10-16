@@ -29,6 +29,10 @@
           type: Parameter.TYPE_STRING
         })
       ];
+      this.document.refresh_clauses();
+    },
+    detached: function(){
+      this.document.refresh_clauses();
     }
   });
 }).call(this);
