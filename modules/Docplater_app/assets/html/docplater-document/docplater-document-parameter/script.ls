@@ -38,7 +38,7 @@ Polymer(
 			@parameter	= @document.data.clauses[@clause.hash].parameters[@name]
 		else
 			@parameter	= @document.data.parameters[@name]
-		@value	= @parameter.effective_value
+		@_update_display_value()
 		@parameter.once(@_track_parameter_effective_value)
 	_track_parameter_effective_value : !->
 		parameter	= @parameter
@@ -47,9 +47,11 @@ Polymer(
 				if parameter != @parameter
 					@_track_parameter_effective_value()
 					parameter.off(@_track_parameter_effective_value)
-				@value	= parameter.effective_value
+				@_update_display_value()
 			['effective_value']
 		)
+	_update_display_value : (parameter) !->
+		@value	= @parameter.effective_value || "@#{@name}"
 	_focus_in : !->
 		Event.fire('docplater/parameter/highlight', {
 			absolute_id	: @parameter.absolute_id

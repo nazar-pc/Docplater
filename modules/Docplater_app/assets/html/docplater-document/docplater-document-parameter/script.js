@@ -44,7 +44,7 @@
       } else {
         this.parameter = this.document.data.parameters[this.name];
       }
-      this.value = this.parameter.effective_value;
+      this._update_display_value();
       this.parameter.once(this._track_parameter_effective_value);
     },
     _track_parameter_effective_value: function(){
@@ -55,8 +55,11 @@
           this$._track_parameter_effective_value();
           parameter.off(this$._track_parameter_effective_value);
         }
-        this$.value = parameter.effective_value;
+        this$._update_display_value();
       }, ['effective_value']);
+    },
+    _update_display_value: function(parameter){
+      this.value = this.parameter.effective_value || "@" + this.name;
     },
     _focus_in: function(){
       Event.fire('docplater/parameter/highlight', {
