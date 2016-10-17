@@ -6,31 +6,69 @@
  * @license   AGPL-3.0, see license.txt
  */
 Event		= cs.Event
-Parameter	= cs.Docplater.Parameter
+Notifiable	= cs.Docplater.Notifiable
 Polymer(
 	is			: 'docplater-document'
 	behaviors	: [
-		cs.Docplater.behaviors.parameters
-		cs.Docplater.behaviors.this
-		cs.Docplater.behaviors.when_ready
+		cs.Docplater.behaviors.attached_once
 	]
 	properties	:
-		clauses	: Array
-		hash	: '43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008'
+		data	:
+			notify	: true
+			type	: Object
+		hash	: String
 		preview	: false
-	attached : !->
-		require(['scribe'], (Scribe) !~>
-			new Scribe(@$.content)
+	created : !->
+		@attached_once
+			.then ~> cs.api('get api/Docplater_app/documents/' + @hash)
+			.then (data) !~>
+				data = Notifiable(data)
+				@_denormalize_parameters(data, data.parameters)
+				for own clause_hash, clause of data.clauses
+					@_denormalize_parameters(data, clause.parameters, clause_hash)
+				@data					= data
+				@$.content.innerHTML	= @data.content
+				require(['scribe'], (Scribe) !~>
+					new Scribe(@$.content)
+				)
+	_denormalize_parameters : (data, parameters, clause_hash) !->
+		for own name, parameter of parameters
+			@_denormalize_parameters_single(data, name, parameter, clause_hash)
+	_denormalize_parameters_single : (data, name, parameter, clause_hash) ->
+		# Create new properties
+		parameter.set('name', name)
+		parameter.set('absolute_id', '')
+		parameter.set('effective_value', '')
+		parameter.on(
+			(keys, new_value) !~>
+				if !clause_hash
+					parameter.absolute_id		= @hash + '/' + parameter.name
+					parameter.effective_value	= @_parameter_get_effective_value(parameter)
+					return
+				value	= parameter.value || parameter.default_value
+				if parameter && value && value.indexOf('@') == 0
+					name	= value.substring(1)
+					if data.parameters[name]
+						parameter.absolute_id		= @hash + '/' + name
+						parameter.effective_value	= @_parameter_get_effective_value(data.parameters[name])
+						@_subscribe_to_upstream_parameters_change(parameter, data.parameters[name])
+						return
+				parameter.absolute_id		= @hash + '/' + @hash + '/' + parameter.name
+				parameter.effective_value	= @_parameter_get_effective_value(parameter)
+			['value']
 		)
-		@parameters	= [
-			Parameter({name: 'company_name', type: Parameter.TYPE_STRING, default_value: 'Company name'})
-			Parameter({name: 'date', type: Parameter.TYPE_DATE})
-			Parameter({name: 'description', type: Parameter.TYPE_TEXT})
-		]
-	refresh_clauses : !->
-		clauses	= @$.content.querySelectorAll('docplater-document-clause')
-		@set('clauses', Array::slice.call(clauses))
+		# Trigger event handler above
+		parameter.fire(['value'])
+	_parameter_get_effective_value : (parameter) ->
+		parameter.value || parameter.default_value
+	_subscribe_to_upstream_parameters_change : (parameter, upstream_parameter) !->
+		callback	= !~>
+			if upstream_parameter.absolute_id == parameter.absolute_id
+				parameter.effective_value	= @_parameter_get_effective_value(upstream_parameter)
+			else
+				upstream_parameter.off(callback, ['effective_value'])
+		upstream_parameter.on(callback, ['effective_value'])
 	_toggle_preview : !->
 		@preview = !@preview
-		Event.fire('dockplater/document/preview', {@preview})
+		Event.fire('docplater/document/preview', {@preview})
 )

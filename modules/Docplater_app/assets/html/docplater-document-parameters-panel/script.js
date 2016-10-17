@@ -12,27 +12,36 @@
   Polymer({
     is: 'docplater-document-parameters-panel',
     properties: {
-      document: {
-        observer: '_document_set',
+      data: {
+        observer: '_data_set',
         type: Object
       },
-      document_parameters: Array,
-      clauses: Array
+      parameters_map: Array
     },
-    _document_set: function(){
-      var this$ = this;
-      this.document.when_ready.then(function(){
-        this$.set('document_parameters', this$.document.parameters);
-        this$.set('clauses', this$.document.clauses);
-      });
+    _data_set: function(){
+      var parameters_map, hash, ref$, clause, own$ = {}.hasOwnProperty;
+      parameters_map = [{
+        'for': 'Document',
+        parameters: Object.values(this.data.parameters)
+      }];
+      for (hash in ref$ = this.data.clauses) if (own$.call(ref$, hash)) {
+        clause = ref$[hash];
+        if (Object.keys(clause.parameters).length) {
+          parameters_map.push({
+            'for': hash.substring(0, 5),
+            parameters: Object.values(clause.parameters)
+          });
+        }
+      }
+      this.parameters_map = parameters_map;
     },
-    _parameter_focus_in: function(e){
-      Event.fire('dockplater/parameter/highlight', {
+    _parameter_highlight: function(e){
+      Event.fire('docplater/parameter/highlight', {
         absolute_id: e.model.parameter.absolute_id
       });
     },
-    _parameter_focus_out: function(){
-      Event.fire('dockplater/parameter/highlight');
+    _parameter_unhighlight: function(){
+      Event.fire('docplater/parameter/highlight');
     }
   });
 }).call(this);

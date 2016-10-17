@@ -24,6 +24,20 @@
     return null;
   }
   x$ = (ref$ = cs.Docplater || (cs.Docplater = {})).behaviors || (ref$.behaviors = {});
+  x$.attached_once = {
+    created: function(){
+      var this$ = this;
+      this.attached_once = new Promise(function(resolve){
+        this$._attached_once_resolve = resolve;
+      });
+    },
+    attached: function(){
+      if (this._attached_once_resolve) {
+        this._attached_once_resolve();
+        delete this._attached_once_resolve;
+      }
+    }
+  };
   x$.document = {
     properties: {
       document: Object
@@ -38,88 +52,6 @@
     },
     attached: function(){
       this.set('clause', find_parent(this, 'docplater-document-clause'));
-    }
-  };
-  x$.parameters = {
-    properties: {
-      parameters: {
-        notify: true,
-        type: Array
-      }
-    },
-    observers: ['_parameter_changed(parameters.*)'],
-    get_parameter: function(name){
-      var i$, ref$, len$, parameter;
-      for (i$ = 0, len$ = (ref$ = this.parameters).length; i$ < len$; ++i$) {
-        parameter = ref$[i$];
-        if (parameter.name === name) {
-          return parameter;
-        }
-      }
-      return null;
-    },
-    _parameter_changed: function(){
-      var i$, ref$, len$, parameter;
-      for (i$ = 0, len$ = (ref$ = this.parameters).length; i$ < len$; ++i$) {
-        parameter = ref$[i$];
-        this._update_parameter(parameter);
-      }
-    },
-    _update_parameter: function(parameter){
-      var value, this$ = this;
-      if (!this.document) {
-        parameter.absolute_id = this.hash + '/' + parameter.name;
-        parameter.real_value = this._parameter_get_real_value(parameter);
-      } else {
-        parameter = this.get_parameter(parameter.name);
-        value = parameter.value || parameter.default_value;
-        this.document.when_ready.then(function(){
-          var name;
-          if (parameter && value && value.indexOf('@') === 0) {
-            name = value.substring(1);
-            parameter.absolute_id = this$.document.hash + '/' + name;
-            parameter.real_value = this$._parameter_get_real_value(this$.document.get_parameter(name));
-          } else {
-            parameter.absolute_id = this$.document.hash + '/' + this$.hash + '/' + parameter.name;
-            parameter.real_value = this$._parameter_get_real_value(parameter);
-          }
-        });
-      }
-    },
-    _parameter_get_real_value: function(parameter){
-      if (parameter.value.length) {
-        return parameter.value;
-      } else {
-        return parameter.default_value;
-      }
-    }
-  };
-  x$['this'] = {
-    properties: {
-      'this': {
-        notify: true,
-        readOnly: true,
-        type: Object
-      }
-    },
-    attached: function(){
-      if (!this['this']) {
-        this._setThis(this);
-      }
-    }
-  };
-  x$.when_ready = {
-    created: function(){
-      var this$ = this;
-      this.when_ready = new Promise(function(_when_ready_resolve){
-        this$._when_ready_resolve = _when_ready_resolve;
-      });
-    },
-    attached: function(){
-      if (this._when_ready_resolve) {
-        this._when_ready_resolve(this);
-        delete this._when_ready_resolve;
-      }
     }
   };
 }).call(this);

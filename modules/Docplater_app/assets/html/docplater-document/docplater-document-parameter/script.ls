@@ -5,8 +5,7 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
-Event		= cs.Event
-Parameter	= cs.Docplater.Parameter
+Event	= cs.Event
 Polymer(
 	is				: 'docplater-document-parameter'
 	behaviors		: [
@@ -17,33 +16,47 @@ Polymer(
 		contenteditable	: 'false'
 		tabindex		: 0
 	properties		:
-		absolute_id	: String
 		highlight	:
 			reflectToAttribute	: true
 			type				: Boolean
-		name	: String
-		preview	: false
-		value	: String
+		name		: String
+		parameter	: Object
+		preview		: false
+		value		: String
 	listeners		:
 		'focus'	: '_focus_in'
 		'blur'	: '_focus_out'
 	created : !->
-		@_highlighting	= @_highlighting.bind(@)
-		@_set_preview	= @_set_preview.bind(@)
-		Event.on('dockplater/parameter/highlight', @_highlighting)
-		Event.on('dockplater/document/preview', @_set_preview)
+		@_highlighting						= @_highlighting.bind(@)
+		@_set_preview						= @_set_preview.bind(@)
+		@_track_parameter_effective_value	= @_track_parameter_effective_value.bind(@)
+		Event.on('docplater/parameter/highlight', @_highlighting)
+		Event.on('docplater/document/preview', @_set_preview)
 	attached : !->
 		@name	= @textContent.trim()
+		if @clause
+			@parameter	= @document.data.clauses[@clause.hash].parameters[@name]
+		else
+			@parameter	= @document.data.parameters[@name]
+		@value	= @parameter.effective_value
+		@parameter.once(@_track_parameter_effective_value)
+	_track_parameter_effective_value : !->
+		parameter	= @parameter
+		parameter.on(
+			!~>
+				if parameter != @parameter
+					@_track_parameter_effective_value()
+					parameter.off(@_track_parameter_effective_value)
+				@value	= parameter.effective_value
+			['effective_value']
+		)
 	_focus_in : !->
-		Event.fire('dockplater/parameter/highlight', {
-			absolute_id	: (@clause || @document).get_parameter(@name).absolute_id
+		Event.fire('docplater/parameter/highlight', {
+			absolute_id	: @parameter.absolute_id
 		})
 	_focus_out : !->
-		Event.fire('dockplater/parameter/highlight')
+		Event.fire('docplater/parameter/highlight')
 	_highlighting : ({absolute_id}?) !->
-		@highlight = absolute_id == (@clause || @document).get_parameter(@name).absolute_id
-	_set_preview : ({preview}) !->
-		if preview
-			@value	= (@clause || @document).get_parameter(@name).real_value
-		@preview	= preview
+		@highlight = absolute_id == @parameter.absolute_id
+	_set_preview : ({@preview}) !->
 )

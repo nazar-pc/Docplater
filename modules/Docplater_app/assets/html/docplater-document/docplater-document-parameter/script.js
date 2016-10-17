@@ -7,9 +7,8 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Event, Parameter;
+  var Event;
   Event = cs.Event;
-  Parameter = cs.Docplater.Parameter;
   Polymer({
     is: 'docplater-document-parameter',
     behaviors: [cs.Docplater.behaviors.document, cs.Docplater.behaviors.document_clause],
@@ -18,12 +17,12 @@
       tabindex: 0
     },
     properties: {
-      absolute_id: String,
       highlight: {
         reflectToAttribute: true,
         type: Boolean
       },
       name: String,
+      parameter: Object,
       preview: false,
       value: String
     },
@@ -34,34 +33,48 @@
     created: function(){
       this._highlighting = this._highlighting.bind(this);
       this._set_preview = this._set_preview.bind(this);
-      Event.on('dockplater/parameter/highlight', this._highlighting);
-      Event.on('dockplater/document/preview', this._set_preview);
+      this._track_parameter_effective_value = this._track_parameter_effective_value.bind(this);
+      Event.on('docplater/parameter/highlight', this._highlighting);
+      Event.on('docplater/document/preview', this._set_preview);
     },
     attached: function(){
       this.name = this.textContent.trim();
+      if (this.clause) {
+        this.parameter = this.document.data.clauses[this.clause.hash].parameters[this.name];
+      } else {
+        this.parameter = this.document.data.parameters[this.name];
+      }
+      this.value = this.parameter.effective_value;
+      this.parameter.once(this._track_parameter_effective_value);
+    },
+    _track_parameter_effective_value: function(){
+      var parameter, this$ = this;
+      parameter = this.parameter;
+      parameter.on(function(){
+        if (parameter !== this$.parameter) {
+          this$._track_parameter_effective_value();
+          parameter.off(this$._track_parameter_effective_value);
+        }
+        this$.value = parameter.effective_value;
+      }, ['effective_value']);
     },
     _focus_in: function(){
-      Event.fire('dockplater/parameter/highlight', {
-        absolute_id: (this.clause || this.document).get_parameter(this.name).absolute_id
+      Event.fire('docplater/parameter/highlight', {
+        absolute_id: this.parameter.absolute_id
       });
     },
     _focus_out: function(){
-      Event.fire('dockplater/parameter/highlight');
+      Event.fire('docplater/parameter/highlight');
     },
     _highlighting: function(arg$){
       var absolute_id;
       if (arg$ != null) {
         absolute_id = arg$.absolute_id;
       }
-      this.highlight = absolute_id === (this.clause || this.document).get_parameter(this.name).absolute_id;
+      this.highlight = absolute_id === this.parameter.absolute_id;
     },
     _set_preview: function(arg$){
-      var preview;
-      preview = arg$.preview;
-      if (preview) {
-        this.value = (this.clause || this.document).get_parameter(this.name).real_value;
-      }
-      this.preview = preview;
+      this.preview = arg$.preview;
     }
   });
 }).call(this);

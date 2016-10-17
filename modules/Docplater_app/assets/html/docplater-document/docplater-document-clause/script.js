@@ -7,32 +7,25 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Parameter;
-  Parameter = cs.Docplater.Parameter;
   Polymer({
     is: 'docplater-document-clause',
-    behaviors: [cs.Docplater.behaviors.document, cs.Docplater.behaviors.parameters, cs.Docplater.behaviors.when_ready],
+    behaviors: [cs.Docplater.behaviors.attached_once, cs.Docplater.behaviors.document],
     hostAttributes: {
       contenteditable: 'false'
     },
     properties: {
-      hash: '9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c'
+      data: Object,
+      hash: String,
+      parameters: Object
     },
-    attached: function(){
-      this.parameters = [
-        Parameter({
-          name: 'company',
-          type: Parameter.TYPE_STRING,
-          value: '@company_name'
-        }), Parameter({
-          name: 'company_location',
-          type: Parameter.TYPE_STRING
-        })
-      ];
-      this.document.refresh_clauses();
-    },
-    detached: function(){
-      this.document.refresh_clauses();
+    created: function(){
+      var this$ = this;
+      this.attached_once.then(function(){
+        return cs.api('get api/Docplater_app/clauses/' + this$.hash);
+      }).then(function(data){
+        this$.data = data;
+        this$.$.content.innerHTML = this$.data.content;
+      });
     }
   });
 }).call(this);

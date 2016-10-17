@@ -5,23 +5,32 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
-Event		= cs.Event
+Event	= cs.Event
 Polymer(
 	is			: 'docplater-document-parameters-panel'
 	properties	:
-		document			:
-			observer	: '_document_set'
+		data	:
+			observer	: '_data_set'
 			type		: Object
-		document_parameters	: Array
-		clauses				: Array
-	_document_set : !->
-		@document.when_ready.then !~>
-			@set('document_parameters', @document.parameters)
-			@set('clauses', @document.clauses)
-	_parameter_focus_in : (e) !->
-		Event.fire('dockplater/parameter/highlight', {
+		parameters_map	: Array
+	_data_set : !->
+		parameters_map	= [
+			{
+				for			: 'Document'
+				parameters	: Object.values(@data.parameters)
+			}
+		]
+		for own hash, clause of @data.clauses
+			if Object.keys(clause.parameters).length
+				parameters_map.push({
+					for			: hash.substring(0, 5)
+					parameters	: Object.values(clause.parameters)
+				})
+		@parameters_map	= parameters_map
+	_parameter_highlight : (e) !->
+		Event.fire('docplater/parameter/highlight', {
 			absolute_id	: e.model.parameter.absolute_id
 		})
-	_parameter_focus_out : !->
-		Event.fire('dockplater/parameter/highlight')
+	_parameter_unhighlight : !->
+		Event.fire('docplater/parameter/highlight')
 )
