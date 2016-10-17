@@ -6,7 +6,28 @@
  * @license   AGPL-3.0, see license.txt
  */
 :host {
-	border     : 1px solid orange;
 	box-sizing : border-box;
 	display    : block;
+	outline    : 1px dashed grey;
+	position   : relative;
+}
+
+header {
+	background  : grey;
+	color       : white;
+	height      : 2em;
+	line-height : 2em;
+	margin-top  : -2em;
+	opacity     : 0;
+	position    : absolute;
+	width       : 100%;
+	z-index     : -1;
+}
+
+:host(:hover),
+:host(:focus) {
+	> header {
+		opacity : 1;
+		z-index : auto;
+	}
 }

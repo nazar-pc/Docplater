@@ -35,6 +35,7 @@
         }
         this$.data = data;
         this$.$.content.innerHTML = this$.data.content;
+        this$.distributeContent();
         require(['scribe'], function(Scribe){
           new Scribe(this$.$.content);
         });

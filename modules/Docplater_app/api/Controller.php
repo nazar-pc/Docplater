@@ -64,6 +64,7 @@ JSON
 			<<<JSON
 {
 	"hash"       : "9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c",
+	"title"      : "Demo template",
 	"content"    : "<p>Here is my <docplater-document-parameter>company</docplater-document-parameter> at <docplater-document-parameter>company_location</docplater-document-parameter></p>",
 	"parameters" : {
 		"company_name" : {

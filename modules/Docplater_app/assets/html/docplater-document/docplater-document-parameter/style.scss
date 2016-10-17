@@ -9,6 +9,8 @@
 	box-sizing : border-box;
 	color      : blue;
 	display    : inline-block;
+
+	@apply --cs-no-selection;
 }
 
 :host(:focus) {

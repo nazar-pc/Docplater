@@ -6,10 +6,9 @@
  * @license   AGPL-3.0, see license.txt
  */
 :host {
-	border     : red 1px solid;
 	box-sizing : border-box;
 	display    : block;
-	max-height : 100vh;
+	height     : 100vh;
 	overflow-y : auto;
 	width      : 100%;
 }
