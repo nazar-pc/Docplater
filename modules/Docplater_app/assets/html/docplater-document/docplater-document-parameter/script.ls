@@ -27,9 +27,9 @@ Polymer(
 		'focus'	: '_focus_in'
 		'blur'	: '_focus_out'
 	created : !->
-		@_highlighting						= @_highlighting.bind(@)
-		@_set_preview						= @_set_preview.bind(@)
-		@_track_parameter_effective_value	= @_track_parameter_effective_value.bind(@)
+		@_highlighting			= @_highlighting.bind(@)
+		@_set_preview			= @_set_preview.bind(@)
+		@_update_display_value	= @_update_display_value.bind(@)
 		Event.on('docplater/parameter/highlight', @_highlighting)
 		Event.on('docplater/document/preview', @_set_preview)
 	attached : !->
@@ -39,17 +39,7 @@ Polymer(
 		else
 			@parameter	= @document.data.parameters[@name]
 		@_update_display_value()
-		@parameter.once(@_track_parameter_effective_value)
-	_track_parameter_effective_value : !->
-		parameter	= @parameter
-		parameter.on(
-			!~>
-				if parameter != @parameter
-					@_track_parameter_effective_value()
-					parameter.off(@_track_parameter_effective_value)
-				@_update_display_value()
-			['effective_value']
-		)
+		@parameter.on(@_update_display_value, ['effective_value'])
 	_update_display_value : (parameter) !->
 		@value	= @parameter.effective_value || "@#{@name}"
 	_focus_in : !->

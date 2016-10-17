@@ -33,7 +33,7 @@
     created: function(){
       this._highlighting = this._highlighting.bind(this);
       this._set_preview = this._set_preview.bind(this);
-      this._track_parameter_effective_value = this._track_parameter_effective_value.bind(this);
+      this._update_display_value = this._update_display_value.bind(this);
       Event.on('docplater/parameter/highlight', this._highlighting);
       Event.on('docplater/document/preview', this._set_preview);
     },
@@ -45,18 +45,7 @@
         this.parameter = this.document.data.parameters[this.name];
       }
       this._update_display_value();
-      this.parameter.once(this._track_parameter_effective_value);
-    },
-    _track_parameter_effective_value: function(){
-      var parameter, this$ = this;
-      parameter = this.parameter;
-      parameter.on(function(){
-        if (parameter !== this$.parameter) {
-          this$._track_parameter_effective_value();
-          parameter.off(this$._track_parameter_effective_value);
-        }
-        this$._update_display_value();
-      }, ['effective_value']);
+      this.parameter.on(this._update_display_value, ['effective_value']);
     },
     _update_display_value: function(parameter){
       this.value = this.parameter.effective_value || "@" + this.name;
