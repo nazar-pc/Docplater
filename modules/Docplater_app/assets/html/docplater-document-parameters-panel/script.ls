@@ -20,13 +20,19 @@ Polymer(
 				parameters	: Object.values(@data.parameters)
 			}
 		]
-		for own hash, clause of @data.clauses
-			if Object.keys(clause.parameters).length
-				parameters_map.push({
-					for			: hash.substring(0, 5)
-					parameters	: Object.values(clause.parameters)
-				})
-		@parameters_map	= parameters_map
+		Promise.all(
+			for own clause_hash, clause of @data.clauses
+				cs.api("get api/Docplater_app/clauses/#clause_hash")
+		).then (clauses) !~>
+			console.log clauses
+			for clause in clauses
+				parameters	= Object.values(@data.clauses[clause.hash].parameters)
+				if parameters.length
+					parameters_map.push({
+						for			: clause.title
+						parameters	: parameters
+					})
+			@parameters_map	= parameters_map
 	_parameter_highlight : (e) !->
 		Event.fire('docplater/parameter/highlight', {
 			absolute_id	: e.model.parameter.absolute_id

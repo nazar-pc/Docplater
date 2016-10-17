@@ -28,7 +28,6 @@ Polymer(
 					@_denormalize_parameters(data, clause.parameters, clause_hash)
 				@data					= data
 				@$.content.innerHTML	= @data.content
-				@distributeContent()
 				require(['scribe'], (Scribe) !~>
 					new Scribe(@$.content)
 				)

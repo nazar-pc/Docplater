@@ -19,21 +19,33 @@
       parameters_map: Array
     },
     _data_set: function(){
-      var parameters_map, hash, ref$, clause, own$ = {}.hasOwnProperty;
+      var parameters_map, clause_hash, clause, this$ = this;
       parameters_map = [{
         'for': 'Document',
         parameters: Object.values(this.data.parameters)
       }];
-      for (hash in ref$ = this.data.clauses) if (own$.call(ref$, hash)) {
-        clause = ref$[hash];
-        if (Object.keys(clause.parameters).length) {
-          parameters_map.push({
-            'for': hash.substring(0, 5),
-            parameters: Object.values(clause.parameters)
-          });
+      Promise.all((function(){
+        var ref$, own$ = {}.hasOwnProperty, results$ = [];
+        for (clause_hash in ref$ = this.data.clauses) if (own$.call(ref$, clause_hash)) {
+          clause = ref$[clause_hash];
+          results$.push(cs.api("get api/Docplater_app/clauses/" + clause_hash));
         }
-      }
-      this.parameters_map = parameters_map;
+        return results$;
+      }.call(this))).then(function(clauses){
+        var i$, len$, clause, parameters;
+        console.log(clauses);
+        for (i$ = 0, len$ = clauses.length; i$ < len$; ++i$) {
+          clause = clauses[i$];
+          parameters = Object.values(this$.data.clauses[clause.hash].parameters);
+          if (parameters.length) {
+            parameters_map.push({
+              'for': clause.title,
+              parameters: parameters
+            });
+          }
+        }
+        this$.parameters_map = parameters_map;
+      });
     },
     _parameter_highlight: function(e){
       Event.fire('docplater/parameter/highlight', {
