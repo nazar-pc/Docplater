@@ -38,14 +38,6 @@
       }
     }
   };
-  x$.document = {
-    properties: {
-      document: Object
-    },
-    attached: function(){
-      this.set('document', find_parent(this, 'docplater-document'));
-    }
-  };
   x$.document_clause = {
     properties: {
       clause: Object

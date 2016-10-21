@@ -9,11 +9,10 @@ dom-module#docplater-document-parameters-panel
 					input(
 						is="cs-input-text"
 						type="text"
-						value="{{parameter.value}}"
+						value="[[parameter.value]]"
 						placeholder="[[parameter.default_value]]"
 						on-focus="_parameter_highlight"
-						on-change="_parameter_highlight"
-						on-input="_parameter_highlight"
+						on-value-changed="_parameter_changed"
 						on-blur="_parameter_unhighlight"
 					)
 	script(src="script.js")

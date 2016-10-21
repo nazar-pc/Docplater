@@ -7,66 +7,83 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Event;
-  Event = cs.Event;
-  Polymer({
-    is: 'docplater-document-parameter',
-    behaviors: [cs.Docplater.behaviors.document, cs.Docplater.behaviors.document_clause],
-    hostAttributes: {
-      contenteditable: 'false',
-      tabindex: 0
-    },
-    properties: {
-      highlight: {
-        reflectToAttribute: true,
-        type: Boolean
+  cs.Docplater.Redux.behavior.then(function(reduxBehavior){
+    Polymer({
+      is: 'docplater-document-parameter',
+      behaviors: [cs.Docplater.behaviors.document_clause, reduxBehavior],
+      hostAttributes: {
+        contenteditable: 'false',
+        tabindex: 0
       },
-      name: String,
-      parameter: Object,
-      preview: false,
-      value: String
-    },
-    listeners: {
-      'focus': '_focus_in',
-      'blur': '_focus_out'
-    },
-    created: function(){
-      this._highlighting = this._highlighting.bind(this);
-      this._set_preview = this._set_preview.bind(this);
-      this._update_display_value = this._update_display_value.bind(this);
-      Event.on('docplater/parameter/highlight', this._highlighting);
-      Event.on('docplater/document/preview', this._set_preview);
-    },
-    attached: function(){
-      this.name = this.textContent.trim();
-      if (this.clause) {
-        this.parameter = this.document.data.clauses[this.clause.hash].parameters[this.name];
-      } else {
-        this.parameter = this.document.data.parameters[this.name];
+      properties: {
+        display_value: String,
+        highlight: {
+          reflectToAttribute: true,
+          type: Boolean
+        },
+        name: String,
+        parameter: {
+          computed: '_parameter(state.document, clause, name)',
+          type: Object
+        },
+        preview: {
+          statePath: 'preview',
+          type: Boolean
+        },
+        state: {
+          statePath: '',
+          type: Object
+        }
+      },
+      listeners: {
+        'focus': '_focus_in',
+        'blur': '_focus_out'
+      },
+      attached: function(){
+        this.name = this.textContent.trim();
+      },
+      _parameter: function(document_state, clause, name){
+        var parameter, effective_value, upstream_parameter, display_value, highlight;
+        if (this.clause) {
+          parameter = document_state.clauses[this.clause.hash].parameters[name];
+        } else {
+          parameter = document_state.parameters[name];
+        }
+        effective_value = parameter.value || parameter.default_value;
+        upstream_parameter = this._get_upstream_parameter(effective_value);
+        if (upstream_parameter) {
+          display_value = upstream_parameter.value || upstream_parameter.default_value || "@" + upstream_name;
+          highlight = upstream_parameter.highlight || parameter.highlight || false;
+        } else {
+          display_value = effective_value || "@" + name;
+          highlight = parameter.highlight || false;
+        }
+        this.highlight = highlight;
+        return parameter.merge({
+          display_value: display_value
+        });
+      },
+      _get_upstream_parameter: function(value){
+        var name;
+        if (value.indexOf('@') !== 0) {
+          return null;
+        } else {
+          name = value.substring(1);
+          return this.getState().document.parameters[name] || null;
+        }
+      },
+      _focus_in: function(){
+        this.dispatch({
+          type: 'PARAMETER_HIGHLIGHT',
+          name: this.name,
+          clause_hash: this.clause && this.clause.hash
+        });
+      },
+      _focus_out: function(){
+        this.dispatch({
+          type: 'PARAMETER_UNHIGHLIGHT'
+        });
       }
-      this._update_display_value();
-      this.parameter.on(this._update_display_value, ['effective_value']);
-    },
-    _update_display_value: function(parameter){
-      this.value = this.parameter.effective_value || "@" + this.name;
-    },
-    _focus_in: function(){
-      Event.fire('docplater/parameter/highlight', {
-        absolute_id: this.parameter.absolute_id
-      });
-    },
-    _focus_out: function(){
-      Event.fire('docplater/parameter/highlight');
-    },
-    _highlighting: function(arg$){
-      var absolute_id;
-      if (arg$ != null) {
-        absolute_id = arg$.absolute_id;
-      }
-      this.highlight = absolute_id === this.parameter.absolute_id;
-    },
-    _set_preview: function(arg$){
-      this.preview = arg$.preview;
-    }
+    });
   });
 }).call(this);

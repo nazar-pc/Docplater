@@ -27,11 +27,6 @@ cs.{}Docplater.{}behaviors
 			if @_attached_once_resolve
 				@_attached_once_resolve()
 				delete @_attached_once_resolve
-	..document =
-		properties	:
-			document	: Object
-		attached	: !->
-			@set('document', find_parent(@, 'docplater-document'))
 	..document_clause =
 		properties	:
 			clause	: Object

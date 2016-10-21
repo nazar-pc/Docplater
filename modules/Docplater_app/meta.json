@@ -1,7 +1,7 @@
 {
 	"package"       : "Docplater_app",
 	"category"      : "modules",
-	"version"       : "0.7.1+build-10",
+	"version"       : "0.8.0+build-11",
 	"description"   : "Main Docplater UI",
 	"author"        : "Nazar Mokrynskyi",
 	"license"       : "AGPL-3.0",
@@ -16,5 +16,10 @@
 	],
 	"require_bower" : {
 		"scribe" : "^3.2"
+	},
+	"require_npm"   : {
+		"seamless-immutable" : "^6.3",
+		"polymer-redux"      : "^0.3",
+		"redux"              : "^3.6"
 	}
 }

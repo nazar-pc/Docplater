@@ -5,38 +5,60 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
-Event	= cs.Event
+redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is			: 'docplater-document-parameters-panel'
+	behaviors	:[
+		redux-behavior
+	]
 	properties	:
-		data	:
-			observer	: '_data_set'
-			type		: Object
 		parameters_map	: Array
-	_data_set : !->
+		state			:
+			statePath	: ''
+			type		: Object
+	observers	: [
+		'_parameters_map(state.document, state.clauses)'
+	]
+	_parameters_map : (document, clauses) !->
+		if @_skip_render
+			@_skip_render	= false
+			return
 		parameters_map	= [
 			{
 				for			: 'Document'
-				parameters	: Object.values(@data.parameters)
+				parameters	: for own name, parameter of document.parameters
+					parameter.merge({name})
 			}
 		]
 		Promise.all(
-			for own clause_hash, clause of @data.clauses
-				cs.api("get api/Docplater_app/clauses/#clause_hash")
+			for own clause_hash, clause of document.clauses
+				clauses[clause_hash] || cs.api("get api/Docplater_app/clauses/#clause_hash")
 		).then (clauses) !~>
-			console.log clauses
 			for clause in clauses
-				parameters	= Object.values(@data.clauses[clause.hash].parameters)
-				if parameters.length
+				parameters	= document.clauses[clause.hash].parameters
+				if Object.keys(parameters).length
 					parameters_map.push({
 						for			: clause.title
-						parameters	: parameters
+						parameters	: for own name, parameter of parameters
+							parameter.merge({clause_hash, name})
 					})
 			@parameters_map	= parameters_map
 	_parameter_highlight : (e) !->
-		Event.fire('docplater/parameter/highlight', {
-			absolute_id	: e.model.parameter.absolute_id
-		})
+		@dispatch(
+			type		: 'PARAMETER_HIGHLIGHT'
+			name		: e.model.parameter.name
+			clause_hash	: e.model.parameter.clause_hash
+		)
 	_parameter_unhighlight : !->
-		Event.fire('docplater/parameter/highlight')
+		@dispatch(
+			type	: 'PARAMETER_UNHIGHLIGHT'
+		)
+	_parameter_changed : (e) !->
+		@_skip_render	= true
+		@dispatch(
+			type		: 'PARAMETER_UPDATE_VALUE'
+			name		: e.model.parameter.name
+			clause_hash	: e.model.parameter.clause_hash
+			value		: e.target.value
+		)
 )

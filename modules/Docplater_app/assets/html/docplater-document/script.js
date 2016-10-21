@@ -7,92 +7,41 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Event, Notifiable;
-  Event = cs.Event;
-  Notifiable = cs.Docplater.Notifiable;
-  Polymer({
-    is: 'docplater-document',
-    behaviors: [cs.Docplater.behaviors.attached_once],
-    properties: {
-      data: {
-        notify: true,
-        type: Object
+  cs.Docplater.Redux.behavior.then(function(reduxBehavior){
+    Polymer({
+      is: 'docplater-document',
+      behaviors: [cs.Docplater.behaviors.attached_once, reduxBehavior],
+      properties: {
+        document: {
+          statePath: 'document',
+          type: Object
+        },
+        hash: String,
+        preview: {
+          statePath: 'preview',
+          type: Boolean
+        }
       },
-      hash: String,
-      preview: false
-    },
-    created: function(){
-      var this$ = this;
-      this.attached_once.then(function(){
-        return cs.api('get api/Docplater_app/documents/' + this$.hash);
-      }).then(function(data){
-        var clause_hash, ref$, clause, own$ = {}.hasOwnProperty;
-        data = Notifiable(data);
-        this$._denormalize_parameters(data, data.parameters);
-        for (clause_hash in ref$ = data.clauses) if (own$.call(ref$, clause_hash)) {
-          clause = ref$[clause_hash];
-          this$._denormalize_parameters(data, clause.parameters, clause_hash);
-        }
-        this$.data = data;
-        this$.$.content.innerHTML = this$.data.content;
-        require(['scribe'], function(Scribe){
-          new Scribe(this$.$.content);
+      created: function(){
+        var this$ = this;
+        this.attached_once.then(function(){
+          return cs.api('get api/Docplater_app/documents/' + this$.hash);
+        }).then(function(document){
+          this$.dispatch({
+            type: 'DOCUMENT_LOADED',
+            document: document
+          });
+          this$.$.content.innerHTML = document.content;
+          require(['scribe'], function(Scribe){
+            new Scribe(this$.$.content);
+          });
         });
-      });
-    },
-    _denormalize_parameters: function(data, parameters, clause_hash){
-      var name, parameter, own$ = {}.hasOwnProperty;
-      for (name in parameters) if (own$.call(parameters, name)) {
-        parameter = parameters[name];
-        this._denormalize_parameters_single(data, name, parameter, clause_hash);
+      },
+      _toggle_preview: function(){
+        this.dispatch({
+          type: 'PREVIEW_TOGGLE'
+        });
       }
-    },
-    _denormalize_parameters_single: function(data, name, parameter, clause_hash){
-      var this$ = this;
-      parameter.set('name', name);
-      parameter.set('absolute_id', '');
-      parameter.set('effective_value', '');
-      parameter.on(function(keys, new_value){
-        var value, name;
-        if (!clause_hash) {
-          parameter.absolute_id = this$.hash + '/' + parameter.name;
-          parameter.effective_value = this$._parameter_get_effective_value(parameter);
-          return;
-        }
-        value = parameter.value || parameter.default_value;
-        if (parameter && value && value.indexOf('@') === 0) {
-          name = value.substring(1);
-          if (data.parameters[name]) {
-            parameter.absolute_id = this$.hash + '/' + name;
-            parameter.effective_value = this$._parameter_get_effective_value(data.parameters[name]);
-            this$._subscribe_to_upstream_parameters_change(parameter, data.parameters[name]);
-            return;
-          }
-        }
-        parameter.absolute_id = this$.hash + '/' + this$.hash + '/' + parameter.name;
-        parameter.effective_value = this$._parameter_get_effective_value(parameter);
-      }, ['value']);
-      return parameter.fire(['value']);
-    },
-    _parameter_get_effective_value: function(parameter){
-      return parameter.value || parameter.default_value;
-    },
-    _subscribe_to_upstream_parameters_change: function(parameter, upstream_parameter){
-      var callback, this$ = this;
-      callback = function(){
-        if (upstream_parameter.absolute_id === parameter.absolute_id) {
-          parameter.effective_value = this$._parameter_get_effective_value(upstream_parameter);
-        } else {
-          upstream_parameter.off(callback, ['effective_value']);
-        }
-      };
-      upstream_parameter.on(callback, ['effective_value']);
-    },
-    _toggle_preview: function(){
-      this.preview = !this.preview;
-      Event.fire('docplater/document/preview', {
-        preview: this.preview
-      });
-    }
+    });
   });
 }).call(this);

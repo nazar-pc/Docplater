@@ -5,50 +5,65 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
-Event	= cs.Event
+redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is				: 'docplater-document-parameter'
 	behaviors		: [
-		cs.Docplater.behaviors.document
 		cs.Docplater.behaviors.document_clause
+		redux-behavior
 	]
 	hostAttributes	:
 		contenteditable	: 'false'
 		tabindex		: 0
 	properties		:
-		highlight	:
+		display_value	: String
+		highlight		:
 			reflectToAttribute	: true
 			type				: Boolean
-		name		: String
-		parameter	: Object
-		preview		: false
-		value		: String
+		name			: String
+		parameter		:
+			computed	: '_parameter(state.document, clause, name)'
+			type		: Object
+		preview		:
+			statePath	: 'preview'
+			type		: Boolean
+		state		:
+			statePath	: ''
+			type		: Object
 	listeners		:
 		'focus'	: '_focus_in'
 		'blur'	: '_focus_out'
-	created : !->
-		@_highlighting			= @_highlighting.bind(@)
-		@_set_preview			= @_set_preview.bind(@)
-		@_update_display_value	= @_update_display_value.bind(@)
-		Event.on('docplater/parameter/highlight', @_highlighting)
-		Event.on('docplater/document/preview', @_set_preview)
 	attached : !->
 		@name	= @textContent.trim()
+	_parameter : (document_state, clause, name) ->
 		if @clause
-			@parameter	= @document.data.clauses[@clause.hash].parameters[@name]
+			parameter	= document_state.clauses[@clause.hash].parameters[name]
 		else
-			@parameter	= @document.data.parameters[@name]
-		@_update_display_value()
-		@parameter.on(@_update_display_value, ['effective_value'])
-	_update_display_value : (parameter) !->
-		@value	= @parameter.effective_value || "@#{@name}"
+			parameter	= document_state.parameters[name]
+		effective_value		= parameter.value || parameter.default_value
+		upstream_parameter	= @_get_upstream_parameter(effective_value)
+		if upstream_parameter
+			display_value	= upstream_parameter.value || upstream_parameter.default_value || "@#upstream_name"
+			highlight		= upstream_parameter.highlight || parameter.highlight || false
+		else
+			display_value	= effective_value || "@#name"
+			highlight		= parameter.highlight || false
+		@highlight	= highlight
+		parameter.merge({display_value})
+	_get_upstream_parameter : (value) ->
+		if value.indexOf('@') != 0
+			null
+		else
+			name	= value.substring(1)
+			@getState().document.parameters[name] || null
 	_focus_in : !->
-		Event.fire('docplater/parameter/highlight', {
-			absolute_id	: @parameter.absolute_id
-		})
+		@dispatch(
+			type		: 'PARAMETER_HIGHLIGHT'
+			name		: @name
+			clause_hash	: @clause && @clause.hash
+		)
 	_focus_out : !->
-		Event.fire('docplater/parameter/highlight')
-	_highlighting : ({absolute_id}?) !->
-		@highlight = absolute_id == @parameter.absolute_id
-	_set_preview : ({@preview}) !->
+		@dispatch(
+			type	: 'PARAMETER_UNHIGHLIGHT'
+		)
 )

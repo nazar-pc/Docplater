@@ -7,53 +7,91 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Event;
-  Event = cs.Event;
-  Polymer({
-    is: 'docplater-document-parameters-panel',
-    properties: {
-      data: {
-        observer: '_data_set',
-        type: Object
+  cs.Docplater.Redux.behavior.then(function(reduxBehavior){
+    Polymer({
+      is: 'docplater-document-parameters-panel',
+      behaviors: [reduxBehavior],
+      properties: {
+        parameters_map: Array,
+        state: {
+          statePath: '',
+          type: Object
+        }
       },
-      parameters_map: Array
-    },
-    _data_set: function(){
-      var parameters_map, clause_hash, clause, this$ = this;
-      parameters_map = [{
-        'for': 'Document',
-        parameters: Object.values(this.data.parameters)
-      }];
-      Promise.all((function(){
-        var ref$, own$ = {}.hasOwnProperty, results$ = [];
-        for (clause_hash in ref$ = this.data.clauses) if (own$.call(ref$, clause_hash)) {
-          clause = ref$[clause_hash];
-          results$.push(cs.api("get api/Docplater_app/clauses/" + clause_hash));
+      observers: ['_parameters_map(state.document, state.clauses)'],
+      _parameters_map: function(document, clauses){
+        var parameters_map, name, parameter, clause_hash, clause, this$ = this;
+        if (this._skip_render) {
+          this._skip_render = false;
+          return;
         }
-        return results$;
-      }.call(this))).then(function(clauses){
-        var i$, len$, clause, parameters;
-        console.log(clauses);
-        for (i$ = 0, len$ = clauses.length; i$ < len$; ++i$) {
-          clause = clauses[i$];
-          parameters = Object.values(this$.data.clauses[clause.hash].parameters);
-          if (parameters.length) {
-            parameters_map.push({
-              'for': clause.title,
-              parameters: parameters
-            });
+        parameters_map = [{
+          'for': 'Document',
+          parameters: (function(){
+            var ref$, own$ = {}.hasOwnProperty, results$ = [];
+            for (name in ref$ = document.parameters) if (own$.call(ref$, name)) {
+              parameter = ref$[name];
+              results$.push(parameter.merge({
+                name: name
+              }));
+            }
+            return results$;
+          }())
+        }];
+        Promise.all((function(){
+          var ref$, own$ = {}.hasOwnProperty, results$ = [];
+          for (clause_hash in ref$ = document.clauses) if (own$.call(ref$, clause_hash)) {
+            clause = ref$[clause_hash];
+            results$.push(clauses[clause_hash] || cs.api("get api/Docplater_app/clauses/" + clause_hash));
           }
-        }
-        this$.parameters_map = parameters_map;
-      });
-    },
-    _parameter_highlight: function(e){
-      Event.fire('docplater/parameter/highlight', {
-        absolute_id: e.model.parameter.absolute_id
-      });
-    },
-    _parameter_unhighlight: function(){
-      Event.fire('docplater/parameter/highlight');
-    }
+          return results$;
+        }())).then(function(clauses){
+          var i$, len$, clause, parameters, name, parameter;
+          for (i$ = 0, len$ = clauses.length; i$ < len$; ++i$) {
+            clause = clauses[i$];
+            parameters = document.clauses[clause.hash].parameters;
+            if (Object.keys(parameters).length) {
+              parameters_map.push({
+                'for': clause.title,
+                parameters: (fn$())
+              });
+            }
+          }
+          this$.parameters_map = parameters_map;
+          function fn$(){
+            var ref$, own$ = {}.hasOwnProperty, results$ = [];
+            for (name in ref$ = parameters) if (own$.call(ref$, name)) {
+              parameter = ref$[name];
+              results$.push(parameter.merge({
+                clause_hash: clause_hash,
+                name: name
+              }));
+            }
+            return results$;
+          }
+        });
+      },
+      _parameter_highlight: function(e){
+        this.dispatch({
+          type: 'PARAMETER_HIGHLIGHT',
+          name: e.model.parameter.name,
+          clause_hash: e.model.parameter.clause_hash
+        });
+      },
+      _parameter_unhighlight: function(){
+        this.dispatch({
+          type: 'PARAMETER_UNHIGHLIGHT'
+        });
+      },
+      _parameter_changed: function(e){
+        this._skip_render = true;
+        this.dispatch({
+          type: 'PARAMETER_UPDATE_VALUE',
+          name: e.model.parameter.name,
+          clause_hash: e.model.parameter.clause_hash,
+          value: e.target.value
+        });
+      }
+    });
   });
 }).call(this);
