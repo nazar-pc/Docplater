@@ -1,18 +1,20 @@
 dom-module#docplater-document-parameters-panel
 	link(rel="import" href="style.css" type="css")
 	template
+		h2 Parameters
 		template(is="dom-repeat" items="[[parameters_map]]" as="map")
-			h3 Parameters for [[map.for]]
-			template(is="dom-repeat" items="[[map.parameters]]" as="parameter")
-				label
-					| @[[parameter.name]]:
-					input(
-						is="cs-input-text"
-						type="text"
-						value="[[parameter.value]]"
-						placeholder="[[parameter.default_value]]"
-						on-focus="_parameter_highlight"
-						on-value-changed="_parameter_changed"
-						on-blur="_parameter_unhighlight"
-					)
+			.map
+				h3 [[map.for]]:
+				template(is="dom-repeat" items="[[map.parameters]]" as="parameter")
+					label
+						| @[[parameter.name]]:
+						input(
+							is="cs-input-text"
+							type="text"
+							value="[[parameter.value]]"
+							placeholder="[[parameter.default_value]]"
+							on-focus="_parameter_highlight"
+							on-value-changed="_parameter_changed"
+							on-blur="_parameter_unhighlight"
+						)
 	script(src="script.js")

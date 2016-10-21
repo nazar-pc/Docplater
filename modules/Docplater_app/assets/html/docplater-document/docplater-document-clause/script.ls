@@ -9,7 +9,6 @@ Polymer(
 	is				: 'docplater-document-clause'
 	behaviors		: [
 		cs.Docplater.behaviors.attached_once
-		cs.Docplater.behaviors.document
 	]
 	hostAttributes	:
 		contenteditable	: 'false'

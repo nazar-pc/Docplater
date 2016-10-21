@@ -9,7 +9,7 @@
 (function(){
   Polymer({
     is: 'docplater-document-clause',
-    behaviors: [cs.Docplater.behaviors.attached_once, cs.Docplater.behaviors.document],
+    behaviors: [cs.Docplater.behaviors.attached_once],
     hostAttributes: {
       contenteditable: 'false'
     },
