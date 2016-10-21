@@ -46,25 +46,29 @@
           }
           return results$;
         }())).then(function(clauses){
-          var i$, len$, clause, parameters, name, parameter;
+          var i$, len$, clause, clause_instances, clause_index, clause_instance, name, parameter, own$ = {}.hasOwnProperty;
           for (i$ = 0, len$ = clauses.length; i$ < len$; ++i$) {
             clause = clauses[i$];
-            parameters = document.clauses[clause.hash].parameters;
-            if (Object.keys(parameters).length) {
-              parameters_map.push({
-                'for': clause.title,
-                parameters: (fn$())
-              });
+            clause_instances = document.clauses[clause.hash];
+            for (clause_index in clause_instances) if (own$.call(clause_instances, clause_index)) {
+              clause_instance = clause_instances[clause_index];
+              if (Object.keys(clause_instance.parameters).length) {
+                parameters_map.push({
+                  'for': clause.title + ' #' + clause_index,
+                  parameters: (fn$())
+                });
+              }
             }
           }
           this$.parameters_map = parameters_map;
           function fn$(){
             var ref$, own$ = {}.hasOwnProperty, results$ = [];
-            for (name in ref$ = parameters) if (own$.call(ref$, name)) {
+            for (name in ref$ = clause_instance.parameters) if (own$.call(ref$, name)) {
               parameter = ref$[name];
               results$.push(parameter.merge({
+                name: name,
                 clause_hash: clause_hash,
-                name: name
+                clause_index: clause_index
               }));
             }
             return results$;
@@ -75,7 +79,8 @@
         this.dispatch({
           type: 'PARAMETER_HIGHLIGHT',
           name: e.model.parameter.name,
-          clause_hash: e.model.parameter.clause_hash
+          clause_hash: e.model.parameter.clause_hash,
+          clause_index: e.model.parameter.clause_index
         });
       },
       _parameter_unhighlight: function(){
@@ -89,6 +94,7 @@
           type: 'PARAMETER_UPDATE_VALUE',
           name: e.model.parameter.name,
           clause_hash: e.model.parameter.clause_hash,
+          clause_index: e.model.parameter.clause_index,
           value: e.target.value
         });
       }

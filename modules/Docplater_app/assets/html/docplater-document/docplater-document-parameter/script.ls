@@ -37,7 +37,7 @@ Polymer(
 		@name	= @textContent.trim()
 	_parameter : (document_state, clause, name) ->
 		if @clause
-			parameter	= document_state.clauses[@clause.hash].parameters[name]
+			parameter	= document_state.clauses[@clause.hash][@clause.index].parameters[name]
 		else
 			parameter	= document_state.parameters[name]
 		effective_value		= parameter.value || parameter.default_value
@@ -58,9 +58,10 @@ Polymer(
 			@getState().document.parameters[name] || null
 	_focus_in : !->
 		@dispatch(
-			type		: 'PARAMETER_HIGHLIGHT'
-			name		: @name
-			clause_hash	: @clause && @clause.hash
+			type			: 'PARAMETER_HIGHLIGHT'
+			name			: @name
+			clause_hash		: @clause && @clause.hash
+			clause_index	: @clause && @clause.index
 		)
 	_focus_out : !->
 		@dispatch(

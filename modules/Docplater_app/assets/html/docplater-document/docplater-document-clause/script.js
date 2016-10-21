@@ -16,6 +16,7 @@
     properties: {
       data: Object,
       hash: String,
+      index: Number,
       parameters: Object
     },
     created: function(){

@@ -35,19 +35,21 @@ Polymer(
 				clauses[clause_hash] || cs.api("get api/Docplater_app/clauses/#clause_hash")
 		).then (clauses) !~>
 			for clause in clauses
-				parameters	= document.clauses[clause.hash].parameters
-				if Object.keys(parameters).length
-					parameters_map.push({
-						for			: clause.title
-						parameters	: for own name, parameter of parameters
-							parameter.merge({clause_hash, name})
-					})
+				clause_instances	= document.clauses[clause.hash]
+				for own clause_index, clause_instance of clause_instances
+					if Object.keys(clause_instance.parameters).length
+						parameters_map.push({
+							for			: clause.title + ' #' + clause_index
+							parameters	: for own name, parameter of clause_instance.parameters
+								parameter.merge({name, clause_hash, clause_index})
+						})
 			@parameters_map	= parameters_map
 	_parameter_highlight : (e) !->
 		@dispatch(
-			type		: 'PARAMETER_HIGHLIGHT'
-			name		: e.model.parameter.name
-			clause_hash	: e.model.parameter.clause_hash
+			type			: 'PARAMETER_HIGHLIGHT'
+			name			: e.model.parameter.name
+			clause_hash		: e.model.parameter.clause_hash
+			clause_index	: e.model.parameter.clause_index
 		)
 	_parameter_unhighlight : !->
 		@dispatch(
@@ -56,9 +58,10 @@ Polymer(
 	_parameter_changed : (e) !->
 		@_skip_render	= true
 		@dispatch(
-			type		: 'PARAMETER_UPDATE_VALUE'
-			name		: e.model.parameter.name
-			clause_hash	: e.model.parameter.clause_hash
-			value		: e.target.value
+			type			: 'PARAMETER_UPDATE_VALUE'
+			name			: e.model.parameter.name
+			clause_hash		: e.model.parameter.clause_hash
+			clause_index	: e.model.parameter.clause_index
+			value			: e.target.value
 		)
 )

@@ -45,7 +45,7 @@
       _parameter: function(document_state, clause, name){
         var parameter, effective_value, upstream_parameter, display_value, highlight;
         if (this.clause) {
-          parameter = document_state.clauses[this.clause.hash].parameters[name];
+          parameter = document_state.clauses[this.clause.hash][this.clause.index].parameters[name];
         } else {
           parameter = document_state.parameters[name];
         }
@@ -76,7 +76,8 @@
         this.dispatch({
           type: 'PARAMETER_HIGHLIGHT',
           name: this.name,
-          clause_hash: this.clause && this.clause.hash
+          clause_hash: this.clause && this.clause.hash,
+          clause_index: this.clause && this.clause.index
         });
       },
       _focus_out: function(){

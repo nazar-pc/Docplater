@@ -27,9 +27,9 @@
     store = arg$[0], polymerRedux = arg$[1][0];
     return polymerRedux(store);
   });
-  function get_full_parameter_path(state, parameter, clause_hash){
+  function get_full_parameter_path(state, parameter, clause_hash, clause_index){
     if (clause_hash) {
-      return ['document', 'clauses', clause_hash, 'parameters', parameter];
+      return ['document', 'clauses', clause_hash, clause_index, 'parameters', parameter];
     } else {
       return ['document', 'parameters', parameter];
     }
@@ -46,15 +46,17 @@
       if (state.highlighted_parameter) {
         state = state.setIn(state.highlighted_parameter.concat('highlight'), false);
       }
-      highlighted_parameter = get_full_parameter_path(state, action.name, action.clause_hash);
+      highlighted_parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
       return state.set('highlighted_parameter', highlighted_parameter).setIn(highlighted_parameter.concat('highlight'), true);
     case 'PARAMETER_UNHIGHLIGHT':
       if (state.highlighted_parameter) {
         return state.setIn(state.highlighted_parameter.concat('highlight'), false).set('highlighted_parameter');
+      } else {
+        return state;
       }
       break;
     case 'PARAMETER_UPDATE_VALUE':
-      parameter = get_full_parameter_path(state, action.name, action.clause_hash);
+      parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
       return state.setIn(parameter.concat('value'), action.value);
     case 'PREVIEW_TOGGLE':
       return state.merge({

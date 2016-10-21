@@ -15,6 +15,7 @@ Polymer(
 	properties		:
 		data		: Object
 		hash		: String
+		index		: Number
 		parameters	: Object
 	created : !->
 		@attached_once

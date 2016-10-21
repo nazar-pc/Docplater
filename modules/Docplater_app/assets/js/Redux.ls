@@ -22,9 +22,9 @@ Redux.behavior	=
 		require(['polymer-redux'])
 	]).then ([store, [polymer-redux]]) ->
 		polymer-redux(store)
-function get_full_parameter_path (state, parameter, clause_hash)
+function get_full_parameter_path (state, parameter, clause_hash, clause_index)
 	if clause_hash
-		['document', 'clauses', clause_hash, 'parameters', parameter]
+		['document', 'clauses', clause_hash, clause_index, 'parameters', parameter]
 	else
 		['document', 'parameters', parameter]
 
@@ -40,7 +40,7 @@ function reducer (state = initial_state, action)
 		when 'PARAMETER_HIGHLIGHT'
 			if state.highlighted_parameter
 				state	= state.setIn(state.highlighted_parameter.concat('highlight'), false)
-			highlighted_parameter	= get_full_parameter_path(state, action.name, action.clause_hash)
+			highlighted_parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index)
 			state
 				.set('highlighted_parameter', highlighted_parameter)
 				.setIn(highlighted_parameter.concat('highlight'), true)
@@ -49,8 +49,10 @@ function reducer (state = initial_state, action)
 				state
 					.setIn(state.highlighted_parameter.concat('highlight'), false)
 					.set('highlighted_parameter')
+			else
+				state
 		when 'PARAMETER_UPDATE_VALUE'
-			parameter	= get_full_parameter_path(state, action.name, action.clause_hash)
+			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index)
 			state.setIn(parameter.concat('value'), action.value)
 		when 'PREVIEW_TOGGLE'
 			state.merge(
