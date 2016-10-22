@@ -6,19 +6,27 @@
  * @license   AGPL-3.0, see license.txt
  */
 :host {
-	box-sizing : border-box;
-	display    : block;
-	height     : 100vh;
+	box-sizing     : border-box;
+	display        : flex;
+	flex-direction : column;
+	height         : 100vh;
+	width          : 100%;
+}
+
+.panel {
+	height : 3rem;
+}
+
+.content-wrapper {
 	overflow-y : auto;
-	width      : 100%;
 }
 
 #content {
 	box-shadow : 0 0 2rem .1rem grey;
 	font-size  : 10pt;
 			   //height     : 29.7cm;
+	margin     : 2rem auto;
 	outline    : none;
-	margin     : 15px auto;
 	padding    : 2.54cm 1.32cm 3.67cm 1.9cm;
 	width      : 21cm;
 

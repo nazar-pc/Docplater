@@ -1,6 +1,8 @@
 dom-module#docplater-document
 	link(rel="import" href="style.css" type="css")
 	template
-		button(is="cs-button" type="button" on-tap="_toggle_preview") Toggle preview [[preview]]
-		#content
+		.panel
+			button(is="cs-button" type="button" on-tap="_toggle_preview") Toggle preview [[preview]]
+		.content-wrapper
+			#content
 	script(src="script.js")
