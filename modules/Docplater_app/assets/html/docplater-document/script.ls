@@ -22,12 +22,8 @@ Polymer(
 			type		: Boolean
 	created : !->
 		@attached_once
-			.then ~> cs.api('get api/Docplater_app/documents/' + @hash)
+			.then ~> cs.Docplater.functions.get_document(@hash)
 			.then (document) !~>
-				@dispatch(
-					type		: 'DOCUMENT_LOADED'
-					document	: document
-				)
 				@$.content.innerHTML	= document.content
 				require(['scribe'], (Scribe) !~>
 					new Scribe(@$.content)

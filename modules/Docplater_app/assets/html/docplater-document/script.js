@@ -25,12 +25,8 @@
       created: function(){
         var this$ = this;
         this.attached_once.then(function(){
-          return cs.api('get api/Docplater_app/documents/' + this$.hash);
+          return cs.Docplater.functions.get_document(this$.hash);
         }).then(function(document){
-          this$.dispatch({
-            type: 'DOCUMENT_LOADED',
-            document: document
-          });
           this$.$.content.innerHTML = document.content;
           require(['scribe'], function(Scribe){
             new Scribe(this$.$.content);

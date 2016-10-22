@@ -20,7 +20,7 @@
       },
       observers: ['_parameters_map(state.document, state.clauses)'],
       _parameters_map: function(document, clauses){
-        var parameters_map, name, parameter, clause_hash, clause, this$ = this;
+        var parameters_map, name, parameter, clause_hash, this$ = this;
         if (this._skip_render) {
           this._skip_render = false;
           return;
@@ -41,8 +41,7 @@
         Promise.all((function(){
           var ref$, own$ = {}.hasOwnProperty, results$ = [];
           for (clause_hash in ref$ = document.clauses) if (own$.call(ref$, clause_hash)) {
-            clause = ref$[clause_hash];
-            results$.push(clauses[clause_hash] || cs.api("get api/Docplater_app/clauses/" + clause_hash));
+            results$.push(cs.Docplater.functions.get_clause(clause_hash));
           }
           return results$;
         }())).then(function(clauses){

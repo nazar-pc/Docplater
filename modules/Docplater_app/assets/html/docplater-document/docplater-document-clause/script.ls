@@ -19,7 +19,7 @@ Polymer(
 		parameters	: Object
 	created : !->
 		@attached_once
-			.then ~> cs.api('get api/Docplater_app/clauses/' + @hash)
+			.then ~> cs.Docplater.functions.get_clause(@hash)
 			.then (@data) !~>
 				@$.content.innerHTML	= @data.content
 )

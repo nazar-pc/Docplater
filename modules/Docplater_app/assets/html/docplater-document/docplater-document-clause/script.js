@@ -22,7 +22,7 @@
     created: function(){
       var this$ = this;
       this.attached_once.then(function(){
-        return cs.api('get api/Docplater_app/clauses/' + this$.hash);
+        return cs.Docplater.functions.get_clause(this$.hash);
       }).then(function(data){
         this$.data = data;
         this$.$.content.innerHTML = this$.data.content;

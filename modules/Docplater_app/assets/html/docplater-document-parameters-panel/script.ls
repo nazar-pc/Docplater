@@ -31,8 +31,8 @@ Polymer(
 			}
 		]
 		Promise.all(
-			for own clause_hash, clause of document.clauses
-				clauses[clause_hash] || cs.api("get api/Docplater_app/clauses/#clause_hash")
+			for own clause_hash of document.clauses
+				cs.Docplater.functions.get_clause(clause_hash)
 		).then (clauses) !~>
 			for clause in clauses
 				clause_instances	= document.clauses[clause.hash]
