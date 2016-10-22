@@ -1,7 +1,7 @@
 {
 	"package"       : "Docplater_app",
 	"category"      : "modules",
-	"version"       : "0.11.0+build-14",
+	"version"       : "0.11.1+build-15",
 	"description"   : "Main Docplater UI",
 	"author"        : "Nazar Mokrynskyi",
 	"license"       : "AGPL-3.0",
