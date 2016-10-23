@@ -14,9 +14,10 @@ class RequireJS {
 	/**
 	 * @return string[]
 	 */
-	public static function get_paths () {
+	public static function get_config () {
 		$Config                = Config::instance();
 		$paths                 = [];
+		$packages              = [];
 		$directories_to_browse = [
 			DIR.'/bower_components',
 			DIR.'/node_modules'
@@ -25,6 +26,7 @@ class RequireJS {
 			'System/Page/requirejs',
 			[
 				'paths'                 => &$paths,
+				'packages'              => &$packages,
 				'directories_to_browse' => &$directories_to_browse
 			]
 		);
@@ -34,12 +36,16 @@ class RequireJS {
 			}
 			$paths += static::add_aliases(MODULES."/$module_name");
 		}
+		$allowed_extensions = $Config->core['cache_compress_js_css'] ? ['min.js', 'js'] : ['js'];
 		foreach ($directories_to_browse as $dir) {
 			foreach (get_files_list($dir, false, 'd', true) as $d) {
-				$paths += static::find_package($d);
+				$packages[] = static::find_package_main_path($d, $allowed_extensions);
 			}
 		}
-		return _substr($paths, strlen(DIR));
+		return [
+			'paths'    => _substr($paths, strlen(DIR)),
+			'packages' => array_values(array_filter($packages))
+		];
 	}
 	/**
 	 * @param string $dir
@@ -60,26 +66,34 @@ class RequireJS {
 		return $paths;
 	}
 	/**
-	 * @param string $dir
+	 * @param string   $dir
+	 * @param string[] $allowed_extensions
 	 *
 	 * @return string[]
 	 */
-	protected static function find_package ($dir) {
-		$path = static::find_package_bower($dir) ?: static::find_package_npm($dir);
-		return $path ? [basename($dir) => substr($path, 0, -3)] : [];
+	protected static function find_package_main_path ($dir, $allowed_extensions) {
+		$path = static::find_package_bower($dir, $allowed_extensions) ?: static::find_package_npm($dir, $allowed_extensions);
+		if (!$path) {
+			return [];
+		}
+		return [
+			'name'     => basename($dir),
+			'main'     => substr($path, strlen($dir) + 1, -3),
+			'location' => substr($dir, strlen(DIR))
+		];
 	}
 	/**
-	 * @param string $dir
+	 * @param string   $dir
+	 * @param string[] $allowed_extensions
 	 *
 	 * @return false|string
 	 */
-	protected static function find_package_bower ($dir) {
+	protected static function find_package_bower ($dir, $allowed_extensions) {
 		$bower = @file_get_json("$dir/bower.json");
 		foreach (@(array)$bower['main'] as $main) {
 			if (preg_match('/\.js$/', $main)) {
 				$main = substr($main, 0, -3);
-				// There is a chance that minified file is present
-				$main = file_exists_with_extension("$dir/$main", ['min.js', 'js']);
+				$main = file_exists_with_extension("$dir/$main", $allowed_extensions);
 				if ($main) {
 					return $main;
 				}
@@ -88,11 +102,12 @@ class RequireJS {
 		return false;
 	}
 	/**
-	 * @param string $dir
+	 * @param string   $dir
+	 * @param string[] $allowed_extensions
 	 *
 	 * @return false|string
 	 */
-	protected static function find_package_npm ($dir) {
+	protected static function find_package_npm ($dir, $allowed_extensions) {
 		$package = @file_get_json("$dir/package.json");
 		// If we have browser-specific declaration - use it
 		/** @noinspection NestedTernaryOperatorInspection */
@@ -101,8 +116,7 @@ class RequireJS {
 			$main = substr($main, 0, -3);
 		}
 		if ($main) {
-			// There is a chance that minified file is present
-			return file_exists_with_extension("$dir/$main", ['min.js', 'js']) ?: file_exists_with_extension("$dir/dist/$main", ['min.js', 'js']);
+			return file_exists_with_extension("$dir/$main", $allowed_extensions) ?: file_exists_with_extension("$dir/dist/$main", $allowed_extensions);
 		}
 		return false;
 	}
