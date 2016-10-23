@@ -41,4 +41,53 @@
       });
     });
   };
+  x$.rx = {
+    hash: function(it){
+      return this.test(it);
+    }.bind(/^[0-9a-f]{64}$/),
+    number: function(it){
+      return this.test(it);
+    }.bind(/^[0-9]+$/)
+  };
+  x$.get_list_of_allowed_tags = function(){
+    var list, tags, i$, len$, tag;
+    list = ['p', 'div', 'b', 'strong', 'i', 'em', 'u', 'strike', 'sup', 'sub', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'docplater-document-clause', 'docplater-document-parameter'];
+    tags = {};
+    for (i$ = 0, len$ = list.length; i$ < len$; ++i$) {
+      tag = list[i$];
+      tags[tag] = {};
+    }
+    return tags;
+  };
+  x$.fill_tags_attributes = function(tags){
+    var map, tag, attributes, attribute, attribute_value;
+    map = {
+      td: {
+        colspan: this.rx.number,
+        rowspan: this.rx.number
+      },
+      'docplater-document-clause': {
+        contenteditable: 'false',
+        tabindex: 0,
+        hash: this.rx.hash,
+        index: this.rx.number
+      },
+      'docplater-document-parameter': {
+        contenteditable: 'false',
+        tabindex: 0
+      }
+    };
+    for (tag in map) {
+      attributes = map[tag];
+      for (attribute in attributes) {
+        attribute_value = attributes[attribute];
+        if (attribute_value instanceof Object) {
+          tags[tag][attribute] = attribute_value;
+        } else {
+          tags[tag][attribute] = true;
+        }
+      }
+    }
+    return tags;
+  };
 }).call(this);

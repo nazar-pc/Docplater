@@ -8,8 +8,10 @@
  */
 (function(){
   requirejs.config({
-    paths: {
-      redux: '/storage/Composer/vendor/npm-asset/redux/dist/redux'
-    }
+    packages: [{
+      name: 'redux',
+      main: 'redux',
+      location: '/storage/Composer/vendor/npm-asset/redux/dist'
+    }]
   });
 }).call(this);

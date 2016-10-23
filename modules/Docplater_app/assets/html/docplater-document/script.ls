@@ -23,11 +23,22 @@ Polymer(
 	created : !->
 		@attached_once
 			.then ~> cs.Docplater.functions.get_document(@hash)
-			.then (document) !~>
-				@$.content.innerHTML	= document.content
-				require(['scribe'], (Scribe) !~>
-					new Scribe(@$.content)
-				)
+			.then !-> @_init_scribe()
+	_init_scribe : !->
+		if @scribe_instance
+			return
+		require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-sanitizer']).then(
+			([scribe-editor, scribe-plugin-inline-styles-to-elements, scribe-plugin-sanitizer]) !~>
+				@scribe_instance	= new scribe-editor(@$.content)
+				@scribe_instance
+					..use(scribe-plugin-inline-styles-to-elements())
+					..use(scribe-plugin-sanitizer(
+						tags: cs.Docplater.functions.fill_tags_attributes(
+							cs.Docplater.functions.get_list_of_allowed_tags()
+						)
+					))
+					..setHTML(@document.content)
+		)
 	_toggle_preview : !->
 		@dispatch(
 			type	: 'PREVIEW_TOGGLE'

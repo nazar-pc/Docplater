@@ -26,11 +26,25 @@
         var this$ = this;
         this.attached_once.then(function(){
           return cs.Docplater.functions.get_document(this$.hash);
-        }).then(function(document){
-          this$.$.content.innerHTML = document.content;
-          require(['scribe'], function(Scribe){
-            new Scribe(this$.$.content);
-          });
+        }).then(function(){
+          this._init_scribe();
+        });
+      },
+      _init_scribe: function(){
+        var this$ = this;
+        if (this.scribe_instance) {
+          return;
+        }
+        require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-sanitizer']).then(function(arg$){
+          var scribeEditor, scribePluginInlineStylesToElements, scribePluginSanitizer, x$;
+          scribeEditor = arg$[0], scribePluginInlineStylesToElements = arg$[1], scribePluginSanitizer = arg$[2];
+          this$.scribe_instance = new scribeEditor(this$.$.content);
+          x$ = this$.scribe_instance;
+          x$.use(scribePluginInlineStylesToElements());
+          x$.use(scribePluginSanitizer({
+            tags: cs.Docplater.functions.fill_tags_attributes(cs.Docplater.functions.get_list_of_allowed_tags())
+          }));
+          x$.setHTML(this$.document.content);
         });
       },
       _toggle_preview: function(){
