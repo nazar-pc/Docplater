@@ -1,7 +1,7 @@
 {
 	"package"     : "Docplater_app",
 	"category"    : "modules",
-	"version"     : "0.13.0+build-17",
+	"version"     : "0.14.0+build-18",
 	"description" : "Main Docplater UI",
 	"author"      : "Nazar Mokrynskyi",
 	"license"     : "AGPL-3.0",
@@ -19,6 +19,7 @@
 		"scribe-editor"                           : "^3.2",
 		"scribe-plugin-inline-styles-to-elements" : "^0.1",
 		"scribe-plugin-sanitizer"                 : "^0.1",
+		"scribe-plugin-tab-indent"                : "^0.1",
 		"lodash-amd"                              : "3.5.0",
 		"seamless-immutable"                      : "^6.3",
 		"polymer-redux"                           : "^0.3",

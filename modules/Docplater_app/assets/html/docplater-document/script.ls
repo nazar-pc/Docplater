@@ -23,12 +23,12 @@ Polymer(
 	created : !->
 		@attached_once
 			.then ~> cs.Docplater.functions.get_document(@hash)
-			.then !-> @_init_scribe()
+			.then !~> @_init_scribe()
 	_init_scribe : !->
 		if @scribe_instance
 			return
-		require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-sanitizer']).then(
-			([scribe-editor, scribe-plugin-inline-styles-to-elements, scribe-plugin-sanitizer]) !~>
+		require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent']).then(
+			([scribe-editor, scribe-plugin-inline-styles-to-elements, scribe-plugin-sanitizer, scribe-plugin-tab-indent]) !~>
 				@scribe_instance	= new scribe-editor(@$.content)
 				@scribe_instance
 					..use(scribe-plugin-inline-styles-to-elements())
@@ -37,6 +37,7 @@ Polymer(
 							cs.Docplater.functions.get_list_of_allowed_tags()
 						)
 					))
+					..use(scribe-plugin-tab-indent())
 					..setHTML(@document.content)
 		)
 	_toggle_preview : !->
