@@ -2,6 +2,21 @@ dom-module#docplater-document
 	link(rel="import" href="style.css" type="css")
 	template
 		.panel
+			nav#toolbar(is="cs-nav-button-group")
+				button(is="cs-button" type="button" data-command-name="undo") Undo
+				button(is="cs-button" type="button" data-command-name="redo") Redo
+				button(is="cs-button" type="button" data-command-name="removeFormat") Remove Formatting
+				button(is="cs-button" type="button" data-command-name="h1") H1
+				button(is="cs-button" type="button" data-command-name="h2") H2
+				button(is="cs-button" type="button" data-command-name="h3") H3
+				button(is="cs-button" type="button" data-command-name="bold") Bold
+				button(is="cs-button" type="button" data-command-name="italic") Italic
+				button(is="cs-button" type="button" data-command-name="underline") Underline
+				button(is="cs-button" type="button" data-command-name="strikeThrough") Strike Through
+				button(is="cs-button" type="button" data-command-name="insertOrderedList") Ordered List
+				button(is="cs-button" type="button" data-command-name="insertUnorderedList") Unordered List
+				button(is="cs-button" type="button" data-command-name="indent") Indent
+				button(is="cs-button" type="button" data-command-name="outdent") Outdent
 			button(is="cs-button" type="button" on-tap="_toggle_preview") Toggle preview [[preview]]
 		.content-wrapper
 			#content

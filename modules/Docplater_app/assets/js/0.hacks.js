@@ -7,6 +7,9 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
+  document.designMode = "on";
+  document.execCommand('enableObjectResizing', false, 'false');
+  document.execCommand("enableInlineTableEditing", false, "false");
   requirejs.config({
     packages: [{
       name: 'redux',

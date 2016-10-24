@@ -8,8 +8,6 @@
 :host {
 	box-sizing : border-box;
 	display    : block;
-	outline    : 1px dashed grey;
-	position   : relative;
 }
 
 header {
@@ -19,7 +17,6 @@ header {
 	line-height : 2em;
 	margin-top  : -2em;
 	opacity     : 0;
-	position    : absolute;
 	width       : 100%;
 	z-index     : -1;
 }
@@ -30,4 +27,8 @@ header {
 		opacity : 1;
 		z-index : auto;
 	}
+}
+
+#content {
+	outline : 1px dashed grey;
 }

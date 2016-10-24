@@ -37,7 +37,7 @@ cs.{}Docplater.{}functions
 		list	= [
 			'p', 'div'
 			'b', 'strong', 'i', 'em', 'u', 'strike', 'sup', 'sub'
-			'img'
+			'img', 'br'
 			'table', 'thead', 'tbody', 'tr', 'th', 'td'
 			'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
 			'ul', 'ol', 'li'

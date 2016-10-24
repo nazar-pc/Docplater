@@ -1,7 +1,7 @@
 {
 	"package"     : "Docplater_app",
 	"category"    : "modules",
-	"version"     : "0.14.0+build-18",
+	"version"     : "0.15.0+build-19",
 	"description" : "Main Docplater UI",
 	"author"      : "Nazar Mokrynskyi",
 	"license"     : "AGPL-3.0",
@@ -17,9 +17,12 @@
 	"_"           : "lodash is hardcoded because otherwise broken version is installed (see https://github.com/fxpio/composer-asset-plugin/issues/260)",
 	"require_npm" : {
 		"scribe-editor"                           : "^3.2",
+		"scribe-plugin-heading-command"           : "^0.1",
 		"scribe-plugin-inline-styles-to-elements" : "^0.1",
+		"scribe-plugin-keyboard-shortcuts"        : "^0.1",
 		"scribe-plugin-sanitizer"                 : "^0.1",
 		"scribe-plugin-tab-indent"                : "^0.1",
+		"scribe-plugin-toolbar"                   : "^1.0.0",
 		"lodash-amd"                              : "3.5.0",
 		"seamless-immutable"                      : "^6.3",
 		"polymer-redux"                           : "^0.3",
