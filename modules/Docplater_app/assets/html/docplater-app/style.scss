@@ -8,5 +8,17 @@
 :host {
 	box-sizing : border-box;
 	display    : flex;
+	height     : 100vh;
 	position   : relative;
+	width      : 100vw;
+}
+
+docplater-document {
+	height : 100vh;
+	width  : calc(100vw - 300px);
+}
+
+docplater-document-parameters-panel {
+	height : 100vh;
+	width  : 300px;
 }
