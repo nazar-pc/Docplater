@@ -6,11 +6,12 @@
  * @license   AGPL-3.0, see license.txt
  */
 :host {
-	box-sizing : border-box;
-	display    : block;
-	height     : 100vh;
-	overflow-y : auto;
-	width      : 300px;
+	border-left : .1rem solid rgba(80, 80, 80, .3);
+	box-sizing  : border-box;
+	display     : block;
+	height      : 100vh;
+	overflow-y  : auto;
+	width       : 300px;
 
 	> * {
 		margin : 0 auto;
@@ -35,10 +36,7 @@ h2 {
 	label {
 		display : block;
 
-		& + label {
-			margin-top : .3rem;
-		}
-
+		& + label,
 		input {
 			margin-top : .3rem;
 		}
