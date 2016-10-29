@@ -33,15 +33,34 @@
       });
     },
     _state_changed: function(){
-      var inline_allowed, i$, ref$, len$, element;
-      inline_allowed = Boolean((new this.scribe_instance.api.Selection).range);
+      var ref$, selection, range, inline_allowed, i$, len$, element, heading_allowed, ref1$;
+      ref$ = new this.scribe_instance.api.Selection, selection = ref$.selection, range = ref$.range;
+      inline_allowed = Boolean(range);
       for (i$ = 0, len$ = (ref$ = this.shadowRoot.querySelectorAll('[inline-tag]')).length; i$ < len$; ++i$) {
         element = ref$[i$];
         element.disabled = !inline_allowed;
       }
+      heading_allowed = Boolean((ref$ = selection.baseNode) != null ? typeof (ref1$ = ref$.parentNode).matches == 'function' ? ref1$.matches('h1, h2, h3, p') : void 8 : void 8);
+      for (i$ = 0, len$ = (ref1$ = this.shadowRoot.querySelectorAll('[heading-tag]')).length; i$ < len$; ++i$) {
+        element = ref1$[i$];
+        element.disabled = !heading_allowed;
+      }
     },
     _inline_tag_toggle: function(e){
       this.ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'));
+    },
+    _heading_tag_toggle: function(e){
+      var level;
+      level = parseInt(e.target.getAttribute('level'));
+      if (this.ssa.is_selection_wrapped_with_tag("h" + level) || this.ssa.is_selection_wrapped_with_tag('p')) {
+        this.ssa.toggle_selection_wrapping_with_tag("h" + level, 'p');
+      } else if (level !== 1 && this.ssa.is_selection_wrapped_with_tag('h1')) {
+        this.ssa.toggle_selection_wrapping_with_tag('h1', "h" + level);
+      } else if (level !== 2 && this.ssa.is_selection_wrapped_with_tag('h2')) {
+        this.ssa.toggle_selection_wrapping_with_tag('h2', "h" + level);
+      } else if (level !== 3 && this.ssa.is_selection_wrapped_with_tag('h3')) {
+        this.ssa.toggle_selection_wrapping_with_tag('h3', "h" + level);
+      }
     }
   });
 }).call(this);

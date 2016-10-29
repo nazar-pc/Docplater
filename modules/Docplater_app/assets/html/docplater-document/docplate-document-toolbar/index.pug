@@ -8,9 +8,9 @@ dom-module#docplate-document-toolbar
 			button(is="cs-button" type="button" disabled inline-tag tag="b" on-tap="_inline_tag_toggle" icon="bold" force-fullsize tooltip="Bold")
 			button(is="cs-button" type="button" disabled inline-tag tag="i" on-tap="_inline_tag_toggle" icon="italic" force-fullsize tooltip="Italic")
 			button(is="cs-button" type="button" disabled inline-tag tag="u" on-tap="_inline_tag_toggle" icon="underline" force-fullsize tooltip="Underline")
-			button(is="cs-button" type="button" data-command-name="h1" icon="header" tooltip="Heading level 1") 1
-			button(is="cs-button" type="button" data-command-name="h2" icon="header" tooltip="Heading level 2") 2
-			button(is="cs-button" type="button" data-command-name="h3" icon="header" tooltip="Heading level 3") 3
+			button(is="cs-button" type="button" disabled heading-tag level="1" on-tap="_heading_tag_toggle" icon="header" tooltip="Heading level 1") 1
+			button(is="cs-button" type="button" disabled heading-tag level="2" on-tap="_heading_tag_toggle" icon="header" tooltip="Heading level 2") 2
+			button(is="cs-button" type="button" disabled heading-tag level="3" on-tap="_heading_tag_toggle" icon="header" tooltip="Heading level 3") 3
 			button(is="cs-button" type="button" data-command-name="strikeThrough" icon="strikethrough" force-fullsize tooltip="Strike Through")
 			button(is="cs-button" type="button" data-command-name="insertOrderedList" icon="list-ol" force-fullsize tooltip="Ordered List")
 			button(is="cs-button" type="button" data-command-name="insertUnorderedList" icon="list" force-fullsize tooltip="Unordered List")

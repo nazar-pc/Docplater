@@ -1,3 +1,13 @@
+tags_allowed_for_normalization	= {
+	b		: true
+	strong	: true
+	i		: true
+	em		: true
+	u		: true
+	strike	: true
+	sup		: true
+	sub		: true
+}
 /**
  * Node contents normalization - will combine together similar nodes next to each other, will also merge child nodes of the same type into parent
  *
@@ -6,7 +16,7 @@
 !function normalize (target_node)
 	target_node.normalize()
 	for node in target_node.querySelectorAll('*') by -1
-		if node.parentNode && node.nodeName == node.parentNode.nodeName && node.nodeName.indexOf('-') == -1
+		if node.parentNode && node.nodeName == node.parentNode.nodeName && node.nodeName.toLowerCase() of tags_allowed_for_normalization
 			for child_node in node.childNodes
 				node.insertBefore(child_node, node)
 			node.parentNode.removeChild(node)
@@ -16,7 +26,7 @@
 			if node.nodeType == Node.TEXT_NODE
 				if !node.length
 					node.parentNode.removeChild(node)
-			else if node.nodeType == node.nextSibling.nodeType && node.nodeName.indexOf('-') == -1
+			else if node.nodeType == node.nextSibling.nodeType && node.nodeName.toLowerCase() of tags_allowed_for_normalization
 				for child_node in node.nextSibling.childNodes
 					node.appendChild(child_node)
 				node.nextSibling.parentNode.removeChild(node.nextSibling)
@@ -26,7 +36,10 @@
  * @return {Element}
  */
 function get_container_element (node)
-	if node.nodeType == Node.TEXT_NODE then node.parentNode else node
+	if node.nodeType == Node.TEXT_NODE
+		node.parentNode
+	else
+		node
 /**
  * Will shrink specified parent to the range and return parts before range and after it
  *
@@ -120,15 +133,26 @@ simple_scribe_api::
 	 */
 	..get_normalized_selection_and_range = ->
 		{selection, range}	= new @scribe_instance.api.Selection
-		if range && !@is_selected_text()
+		if range
 			parent_element	= get_container_element(range.commonAncestorContainer)
-			new_range		= new Range
-				..setStartBefore(parent_element.firstChild)
-				..setEndAfter(parent_element.lastChild)
-			range			= new_range
-			selection
-				..removeAllRanges()
-				..addRange(range)
+			if !@is_selected_text()
+				new_range		= new Range
+					..setStartBefore(parent_element.firstChild)
+					..setEndAfter(parent_element.lastChild)
+				range			= new_range
+				selection
+					..removeAllRanges()
+					..addRange(range)
+			else if parent_element == @scribe_instance.el
+				parent_element	= get_container_element(selection.anchorNode)
+				if parent_element != @scribe_instance.el
+					new_range		= new Range
+						..setStartBefore(parent_element.firstChild)
+						..setEndAfter(parent_element.lastChild)
+					range			= new_range
+					selection
+						..removeAllRanges()
+						..addRange(range)
 		{selection, range}
 	/**
 	 * Whether text is selected in editor
@@ -171,7 +195,8 @@ simple_scribe_api::
 		element.appendChild(range.extractContents())
 		range.insertNode(element)
 		new_range	= new Range
-			..selectNode(element)
+			..setStartBefore(element.firstChild)
+			..setEndAfter(element.lastChild)
 		selection
 			..removeAllRanges()
 			..addRange(new_range)

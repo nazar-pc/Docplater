@@ -23,9 +23,25 @@ Polymer(
 				)
 			)
 	_state_changed : !->
-		inline_allowed	= Boolean((new @scribe_instance.api.Selection).range)
+		{selection, range}	= new @scribe_instance.api.Selection
+		inline_allowed		= Boolean(range)
 		for element in @shadowRoot.querySelectorAll('[inline-tag]')
 			element.disabled	= !inline_allowed
+		heading_allowed	= Boolean(
+			selection.baseNode?.parentNode.matches?('h1, h2, h3, p')
+		)
+		for element in @shadowRoot.querySelectorAll('[heading-tag]')
+			element.disabled	= !heading_allowed
 	_inline_tag_toggle : (e) !->
 		@ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'))
+	_heading_tag_toggle : (e) !->
+		level	= parseInt(e.target.getAttribute('level'))
+		if @ssa.is_selection_wrapped_with_tag("h#level") || @ssa.is_selection_wrapped_with_tag('p')
+			@ssa.toggle_selection_wrapping_with_tag("h#level", 'p')
+		else if level != 1 && @ssa.is_selection_wrapped_with_tag('h1')
+			@ssa.toggle_selection_wrapping_with_tag('h1', "h#level")
+		else if level != 2 && @ssa.is_selection_wrapped_with_tag('h2')
+			@ssa.toggle_selection_wrapping_with_tag('h2', "h#level")
+		else if level != 3 && @ssa.is_selection_wrapped_with_tag('h3')
+			@ssa.toggle_selection_wrapping_with_tag('h3', "h#level")
 )
