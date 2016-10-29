@@ -36,9 +36,9 @@
         if (this.scribe_instance) {
           return;
         }
-        require(['scribe-editor', 'scribe-plugin-heading-command', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-keyboard-shortcuts', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent', 'scribe-plugin-toolbar']).then(function(arg$){
-          var scribeEditor, scribePluginHeadingCommand, scribePluginInlineStylesToElements, scribePluginKeyboardShortcuts, scribePluginSanitizer, scribePluginTabIndent, scribePluginToolbar, x$;
-          scribeEditor = arg$[0], scribePluginHeadingCommand = arg$[1], scribePluginInlineStylesToElements = arg$[2], scribePluginKeyboardShortcuts = arg$[3], scribePluginSanitizer = arg$[4], scribePluginTabIndent = arg$[5], scribePluginToolbar = arg$[6];
+        require(['scribe-editor', 'scribe-plugin-heading-command', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-keyboard-shortcuts', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent']).then(function(arg$){
+          var scribeEditor, scribePluginHeadingCommand, scribePluginInlineStylesToElements, scribePluginKeyboardShortcuts, scribePluginSanitizer, scribePluginTabIndent, x$;
+          scribeEditor = arg$[0], scribePluginHeadingCommand = arg$[1], scribePluginInlineStylesToElements = arg$[2], scribePluginKeyboardShortcuts = arg$[3], scribePluginSanitizer = arg$[4], scribePluginTabIndent = arg$[5];
           this$.scribe_instance = new scribeEditor(this$.$.content);
           x$ = this$.scribe_instance;
           x$.use(scribePluginHeadingCommand(1, true));
@@ -50,7 +50,6 @@
             tags: cs.Docplater.functions.fill_tags_attributes(cs.Docplater.functions.get_list_of_allowed_tags())
           }));
           x$.use(scribePluginTabIndent());
-          x$.use(scribePluginToolbar(this$.$.toolbar));
           x$.setHTML(this$.document.content);
         });
       },

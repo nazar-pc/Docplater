@@ -36,7 +36,6 @@ Polymer(
 			'scribe-plugin-keyboard-shortcuts'
 			'scribe-plugin-sanitizer'
 			'scribe-plugin-tab-indent'
-			'scribe-plugin-toolbar'
 		]).then(
 			([
 				scribe-editor
@@ -45,7 +44,6 @@ Polymer(
 				scribe-plugin-keyboard-shortcuts
 				scribe-plugin-sanitizer
 				scribe-plugin-tab-indent
-				scribe-plugin-toolbar
 			]) !~>
 					@scribe_instance	= new scribe-editor(@$.content)
 					@scribe_instance
@@ -60,7 +58,6 @@ Polymer(
 							)
 						))
 						..use(scribe-plugin-tab-indent())
-						..use(scribe-plugin-toolbar(@$.toolbar))
 						..setHTML(@document.content)
 		)
 	_toggle_preview : !->

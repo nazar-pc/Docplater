@@ -17,6 +17,9 @@
 				if !node.length
 					node.parentNode.removeChild(node)
 			else if node.nodeType == node.nextSibling.nodeType && node.nodeName.indexOf('-') == -1
+				if !node.textContent.length
+					node.parentNode.removeChild(node)
+					continue
 				for child_node in node.nextSibling.childNodes
 					node.appendChild(child_node)
 				node.nextSibling.parentNode.removeChild(node.nextSibling)
@@ -33,15 +36,15 @@ function get_container_element (node)
  * @param {Element}	parent
  * @param {Range}	range
  *
- * {Element[]}
+ * {DocumentFragment[]} 2 fragments: before and after
  */
 function shrink_to_range (parent, range)
 	range_1	= new Range
-	range_1.setStartBefore(parent.firstChild || parent)
-	range_1.setEnd(range.startContainer, range.startOffset)
+		..setStartBefore(parent.firstChild || parent)
+		..setEnd(range.startContainer, range.startOffset)
 	range_2	= new Range
-	range_2.setStart(range.endContainer, range.endOffset)
-	range_2.setEndAfter(parent.lastChild || parent)
+		..setStart(range.endContainer, range.endOffset)
+		..setEndAfter(parent.lastChild || parent)
 	before	= range_1.extractContents()
 	after	= range_2.extractContents()
 	[before, after]
@@ -60,14 +63,62 @@ function wrap_with_tag (element, tag)
  * @param {Scribe} scribe_instance
  */
 !function simple_scribe_api (@scribe_instance)
+	fire_state_changed	= !~>
+		@scribe_instance.trigger('scribe:state-changed')
+	destroyed			= !->
+		@scribe_instance.el
+			..removeEventListener('keyup', fire_state_changed)
+			..removeEventListener('mouseup', fire_state_changed)
+			..removeEventListener('focus', fire_state_changed)
+			..removeEventListener('blur', fire_state_changed)
+		@scribe_instance
+			..off('content-changed', fire_state_changed)
+			..off('scribe:destroy', destroyed)
+	@scribe_instance.el
+		..addEventListener('keyup', fire_state_changed)
+		..addEventListener('mouseup', fire_state_changed)
+		..addEventListener('focus', fire_state_changed)
+		..addEventListener('blur', fire_state_changed)
+	@scribe_instance
+		..on('content-changed', fire_state_changed)
+		..on('scribe:destroy', destroyed)
 	void
 simple_scribe_api::
+	/**
+	 * Subscribe to event when selection or content changes (not necessary actually changes, but likely so)
+	 *
+	 * @param {Function} callback
+	 */
+	..on_state_changed = (callback) !->
+		@scribe_instance.on('scribe:state-changed', callback)
+	/**
+	 * Unsubscribe from event, which was subscribed with `on_state_changed()` method
+	 *
+	 * @param {Function} callback
+	 */
+	..off_state_changed = (callback) !->
+		@scribe_instance.off('scribe:state-changed', callback)
+	/**
+	 * Returns selection and range from `Scribe.api.Selection`, but ensures that some text is selected (if not - selects parent element)
+	 *
+	 * @return {Object} With keys `selection` and `range`
+	 */
+	..get_normalized_selection_and_range = ->
+		{selection, range}	= new @scribe_instance.api.Selection
+		if range && !@is_selected_text()
+			new_range	= new Range
+				..selectNode(range.commonAncestorContainer)
+			range		= new_range
+			selection
+				..removeAllRanges()
+				..addRange(range)
+		{selection, range}
 	/**
 	 * Whether text is selected in editor
 	 *
 	 * @return {bool}
 	 */
-	..selected_text = ->
+	..is_selected_text = ->
 		range = (new @scribe_instance.api.Selection).range
 		Boolean(
 			range &&
@@ -77,6 +128,17 @@ simple_scribe_api::
 			)
 		)
 	/**
+	 * Whether either no selection or selected text within the same element
+	 *
+	 * @return {bool}
+	 */
+	..is_single_element_in_range = ->
+		range = (new @scribe_instance.api.Selection).range
+		Boolean(
+			range &&
+			range.startContainer == range.endContainer
+		)
+	/**
 	 * Wrap selected content with element
 	 *
 	 * @param {Element} element
@@ -84,12 +146,17 @@ simple_scribe_api::
 	 * @return {bool}
 	 */
 	..wrap_selection_with_element = (element) ->
-		if !@selected_text()
+		{selection, range}	= @get_normalized_selection_and_range()
+		if !range
 			return false
-		range			= (new @scribe_instance.api.Selection).range
 		parent_element	= get_container_element(range.commonAncestorContainer)
 		element.appendChild(range.extractContents())
 		range.insertNode(element)
+		new_range	= new Range
+			..selectNode(element)
+		selection
+			..removeAllRanges()
+			..addRange(new_range)
 		normalize(parent_element)
 		true
 	/**
@@ -109,12 +176,12 @@ simple_scribe_api::
 	 * @return {bool}
 	 */
 	..unwrap_selection_with_tag = (tag) ->
-		if !@selected_text()
+		{selection, range}	= @get_normalized_selection_and_range()
+		if !range
 			return false
-		{selection, range}	= new @scribe_instance.api.Selection
-		parent_element		= get_container_element(range.commonAncestorContainer)
-		[before, after]		= shrink_to_range(parent_element, range)
-		fragment			= range.extractContents()
+		parent_element	= get_container_element(range.commonAncestorContainer)
+		[before, after]	= shrink_to_range(parent_element, range)
+		fragment		= range.extractContents()
 		if parent_element.matches(tag)
 			before	= wrap_with_tag(before, tag)
 			after	= wrap_with_tag(after, tag)
@@ -144,12 +211,40 @@ simple_scribe_api::
 			range.insertNode(fragment)
 
 			new_range	= new Range
-			new_range.setStartBefore(range_start)
-			new_range.setEndAfter(range_end)
+				..setStartBefore(range_start)
+				..setEndAfter(range_end)
 			selection
 				..removeAllRanges()
 				..addRange(new_range)
 		normalize(parent_element)
 		true
+	/**
+	 * Whether selection is wrapped with specified tag
+	 *
+	 * @param {string} tag
+	 *
+	 * @return {bool}
+	 */
+	..is_selection_wrapped_with_tag = (tag) ->
+		range	= @get_normalized_selection_and_range().range
+		if !range
+			return false
+		parent_element	= get_container_element(range.commonAncestorContainer)
+		parent_element.matches("#tag, #tag *")
+	/**
+	 * Toggle selection wrapping between two of the specified tags (if second tag not specified - wrap and unwrap single tag only)
+	 *
+	 * @param {string}				tag_1
+	 * @param {(string|undefined)}	tag_2
+	 */
+	..toggle_selection_wrapping_with_tag = (tag_1, tag_2) !->
+		if @is_selection_wrapped_with_tag(tag_1)
+			@unwrap_selection_with_tag(tag_1)
+			if tag_2
+				@wrap_selection_with_tag(tag_2)
+		else
+			if tag_2
+				@unwrap_selection_with_tag(tag_2)
+			@wrap_selection_with_tag(tag_1)
 #	simple_scribe_api
 cs.{}Docplater.simple_scribe_api = simple_scribe_api

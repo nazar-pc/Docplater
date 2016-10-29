@@ -28,6 +28,10 @@
             node.parentNode.removeChild(node);
           }
         } else if (node.nodeType === node.nextSibling.nodeType && node.nodeName.indexOf('-') === -1) {
+          if (!node.textContent.length) {
+            node.parentNode.removeChild(node);
+            continue;
+          }
           for (j$ = 0, len1$ = (ref1$ = node.nextSibling.childNodes).length; j$ < len1$; ++j$) {
             child_node = ref1$[j$];
             node.appendChild(child_node);
@@ -55,16 +59,16 @@
    * @param {Element}	parent
    * @param {Range}	range
    *
-   * {Element[]}
+   * {DocumentFragment[]} 2 fragments: before and after
    */
   function shrink_to_range(parent, range){
-    var range_1, range_2, before, after;
-    range_1 = new Range;
-    range_1.setStartBefore(parent.firstChild || parent);
-    range_1.setEnd(range.startContainer, range.startOffset);
-    range_2 = new Range;
-    range_2.setStart(range.endContainer, range.endOffset);
-    range_2.setEndAfter(parent.lastChild || parent);
+    var x$, range_1, y$, range_2, before, after;
+    x$ = range_1 = new Range;
+    x$.setStartBefore(parent.firstChild || parent);
+    x$.setEnd(range.startContainer, range.startOffset);
+    y$ = range_2 = new Range;
+    y$.setStart(range.endContainer, range.endOffset);
+    y$.setEndAfter(parent.lastChild || parent);
     before = range_1.extractContents();
     after = range_2.extractContents();
     return [before, after];
@@ -85,19 +89,88 @@
    * @param {Scribe} scribe_instance
    */
   function simple_scribe_api(scribe_instance){
-
+    var fire_state_changed, destroyed, x$, y$, this$ = this;
     this.scribe_instance = scribe_instance;
+    fire_state_changed = function(){
+      this$.scribe_instance.trigger('scribe:state-changed');
+    };
+    destroyed = function(){
+      var x$, y$;
+      x$ = this.scribe_instance.el;
+      x$.removeEventListener('keyup', fire_state_changed);
+      x$.removeEventListener('mouseup', fire_state_changed);
+      x$.removeEventListener('focus', fire_state_changed);
+      x$.removeEventListener('blur', fire_state_changed);
+      y$ = this.scribe_instance;
+      y$.off('content-changed', fire_state_changed);
+      y$.off('scribe:destroy', destroyed);
+    };
+    x$ = this.scribe_instance.el;
+    x$.addEventListener('keyup', fire_state_changed);
+    x$.addEventListener('mouseup', fire_state_changed);
+    x$.addEventListener('focus', fire_state_changed);
+    x$.addEventListener('blur', fire_state_changed);
+    y$ = this.scribe_instance;
+    y$.on('content-changed', fire_state_changed);
+    y$.on('scribe:destroy', destroyed);
   }
   x$ = simple_scribe_api.prototype;
+  /**
+   * Subscribe to event when selection or content changes (not necessary actually changes, but likely so)
+   *
+   * @param {Function} callback
+   */
+  x$.on_state_changed = function(callback){
+    this.scribe_instance.on('scribe:state-changed', callback);
+  };
+  /**
+   * Unsubscribe from event, which was subscribed with `on_state_changed()` method
+   *
+   * @param {Function} callback
+   */
+  x$.off_state_changed = function(callback){
+    this.scribe_instance.off('scribe:state-changed', callback);
+  };
+  /**
+   * Returns selection and range from `Scribe.api.Selection`, but ensures that some text is selected (if not - selects parent element)
+   *
+   * @return {Object} With keys `selection` and `range`
+   */
+  x$.get_normalized_selection_and_range = function(){
+    var ref$, selection, range, x$, new_range, y$;
+    ref$ = new this.scribe_instance.api.Selection, selection = ref$.selection, range = ref$.range;
+    if (range && !this.is_selected_text()) {
+      x$ = new_range = new Range;
+      x$.selectNode(range.commonAncestorContainer);
+      range = new_range;
+      y$ = selection;
+      y$.removeAllRanges();
+      y$.addRange(range);
+    }
+    return {
+      selection: selection,
+      range: range
+    };
+  };
   /**
    * Whether text is selected in editor
    *
    * @return {bool}
    */
-  x$.selected_text = function(){
+  x$.is_selected_text = function(){
     var range;
     range = (new this.scribe_instance.api.Selection).range;
     return Boolean(range && (range.startContainer !== range.endContainer || range.startOffset !== range.endOffset));
+  };
+  /**
+   * Whether either no selection or selected text within the same element
+   *
+   * @return {bool}
+   */
+  x$.is_single_element_in_range = function(){
+    var range;
+    range = (new this.scribe_instance.api.Selection).range;
+    return Boolean(range && range.startContainer === range.endContainer);
   };
   /**
    * Wrap selected content with element
@@ -107,14 +180,19 @@
    * @return {bool}
    */
   x$.wrap_selection_with_element = function(element){
-    var range, parent_element;
-    if (!this.selected_text()) {
+    var ref$, selection, range, parent_element, x$, new_range, y$;
+    ref$ = this.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
+    if (!range) {
       return false;
     }
-    range = (new this.scribe_instance.api.Selection).range;
     parent_element = get_container_element(range.commonAncestorContainer);
     element.appendChild(range.extractContents());
     range.insertNode(element);
+    x$ = new_range = new Range;
+    x$.selectNode(element);
+    y$ = selection;
+    y$.removeAllRanges();
+    y$.addRange(new_range);
     normalize(parent_element);
     return true;
   };
@@ -136,11 +214,11 @@
    * @return {bool}
    */
   x$.unwrap_selection_with_tag = function(tag){
-    var ref$, selection, range, parent_element, before, after, fragment, new_range, x$, i$, len$, element, j$, ref1$, len1$, child_node, range_start, range_end, y$;
-    if (!this.selected_text()) {
+    var ref$, selection, range, parent_element, before, after, fragment, new_range, x$, i$, len$, element, j$, ref1$, len1$, child_node, range_start, range_end, y$, z$;
+    ref$ = this.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
+    if (!range) {
       return false;
     }
-    ref$ = new this.scribe_instance.api.Selection, selection = ref$.selection, range = ref$.range;
     parent_element = get_container_element(range.commonAncestorContainer);
     ref$ = shrink_to_range(parent_element, range), before = ref$[0], after = ref$[1];
     fragment = range.extractContents();
@@ -170,15 +248,50 @@
       fragment.insertBefore(before, fragment.firstChild);
       fragment.appendChild(after);
       range.insertNode(fragment);
-      new_range = new Range;
-      new_range.setStartBefore(range_start);
-      new_range.setEndAfter(range_end);
-      y$ = selection;
-      y$.removeAllRanges();
-      y$.addRange(new_range);
+      y$ = new_range = new Range;
+      y$.setStartBefore(range_start);
+      y$.setEndAfter(range_end);
+      z$ = selection;
+      z$.removeAllRanges();
+      z$.addRange(new_range);
     }
     normalize(parent_element);
     return true;
+  };
+  /**
+   * Whether selection is wrapped with specified tag
+   *
+   * @param {string} tag
+   *
+   * @return {bool}
+   */
+  x$.is_selection_wrapped_with_tag = function(tag){
+    var range, parent_element;
+    range = this.get_normalized_selection_and_range().range;
+    if (!range) {
+      return false;
+    }
+    parent_element = get_container_element(range.commonAncestorContainer);
+    return parent_element.matches(tag + ", " + tag + " *");
+  };
+  /**
+   * Toggle selection wrapping between two of the specified tags (if second tag not specified - wrap and unwrap single tag only)
+   *
+   * @param {string}				tag_1
+   * @param {(string|undefined)}	tag_2
+   */
+  x$.toggle_selection_wrapping_with_tag = function(tag_1, tag_2){
+    if (this.is_selection_wrapped_with_tag(tag_1)) {
+      this.unwrap_selection_with_tag(tag_1);
+      if (tag_2) {
+        this.wrap_selection_with_tag(tag_2);
+      }
+    } else {
+      if (tag_2) {
+        this.unwrap_selection_with_tag(tag_2);
+      }
+      this.wrap_selection_with_tag(tag_1);
+    }
   };
   (cs.Docplater || (cs.Docplater = {})).simple_scribe_api = simple_scribe_api;
 }).call(this);
