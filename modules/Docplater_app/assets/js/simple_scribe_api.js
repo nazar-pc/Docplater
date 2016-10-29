@@ -28,10 +28,6 @@
             node.parentNode.removeChild(node);
           }
         } else if (node.nodeType === node.nextSibling.nodeType && node.nodeName.indexOf('-') === -1) {
-          if (!node.textContent.length) {
-            node.parentNode.removeChild(node);
-            continue;
-          }
           for (j$ = 0, len1$ = (ref1$ = node.nextSibling.childNodes).length; j$ < len1$; ++j$) {
             child_node = ref1$[j$];
             node.appendChild(child_node);
@@ -214,7 +210,7 @@
    * @return {bool}
    */
   x$.unwrap_selection_with_tag = function(tag){
-    var ref$, selection, range, parent_element, before, after, fragment, new_range, x$, i$, len$, element, j$, ref1$, len1$, child_node, range_start, range_end, y$, z$;
+    var ref$, selection, range, parent_element, before, after, fragment, new_parent_element, new_range, x$, i$, len$, element, j$, ref1$, len1$, child_node, range_start, range_end, y$, z$;
     ref$ = this.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
     if (!range) {
       return false;
@@ -227,13 +223,21 @@
       after = wrap_with_tag(after, tag);
       fragment.insertBefore(before, fragment.firstChild);
       fragment.appendChild(after);
-      parent_element.parentNode.replaceChild(fragment, parent_element);
+      new_parent_element = parent_element.parentNode;
+      new_parent_element.replaceChild(fragment, parent_element);
+      parent_element = new_parent_element;
       new_range = new Range;
       new_range.setStartAfter(before);
       new_range.setEndBefore(after);
       x$ = selection;
       x$.removeAllRanges();
       x$.addRange(new_range);
+      if (!before.textContent.length) {
+        before.parentNode.removeChild(before);
+      }
+      if (!after.textContent.length) {
+        after.parentNode.removeChild(after);
+      }
     } else {
       for (i$ = 0, len$ = (ref$ = fragment.querySelectorAll(tag)).length; i$ < len$; ++i$) {
         element = ref$[i$];

@@ -17,9 +17,6 @@
 				if !node.length
 					node.parentNode.removeChild(node)
 			else if node.nodeType == node.nextSibling.nodeType && node.nodeName.indexOf('-') == -1
-				if !node.textContent.length
-					node.parentNode.removeChild(node)
-					continue
 				for child_node in node.nextSibling.childNodes
 					node.appendChild(child_node)
 				node.nextSibling.parentNode.removeChild(node.nextSibling)
@@ -189,7 +186,9 @@ simple_scribe_api::
 			fragment.insertBefore(before, fragment.firstChild)
 			fragment.appendChild(after)
 
-			parent_element.parentNode.replaceChild(fragment, parent_element)
+			new_parent_element	= parent_element.parentNode
+			new_parent_element.replaceChild(fragment, parent_element)
+			parent_element		= new_parent_element
 
 			new_range	= new Range
 			new_range.setStartAfter(before)
@@ -197,6 +196,11 @@ simple_scribe_api::
 			selection
 				..removeAllRanges()
 				..addRange(new_range)
+
+			if !before.textContent.length
+				before.parentNode.removeChild(before)
+			if !after.textContent.length
+				after.parentNode.removeChild(after)
 		else
 			for element in fragment.querySelectorAll(tag)
 				for child_node in element.childNodes
