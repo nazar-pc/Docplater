@@ -128,6 +128,26 @@
     this.scribe_instance.off('scribe:state-changed', callback);
   };
   /**
+   * Convenient transactions wrapper on top of provided by Scribe
+   * Main differences: returns value returned by callback, calls callbacks with `this`, ignores nested transactions within single parent transaction
+   *
+   * @param {Function}
+   *
+   * @return {*}
+   */
+  x$.transaction = function(callback){
+    var result;
+    if (this._in_transaction) {
+      return callback.call(this);
+    }
+    this._in_transaction = true;
+    scribe.transactionManager.run(function(){
+      result = callback.call(this);
+    });
+    this._in_transaction = false;
+    return result;
+  };
+  /**
    * Returns selection and range from `Scribe.api.Selection`, but ensures that some text is selected (if not - selects parent element)
    *
    * @return {Object} With keys `selection` and `range`
@@ -176,21 +196,24 @@
    * @return {bool}
    */
   x$.wrap_selection_with_element = function(element){
-    var ref$, selection, range, parent_element, x$, new_range, y$;
-    ref$ = this.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
-    if (!range) {
-      return false;
-    }
-    parent_element = get_container_element(range.commonAncestorContainer);
-    element.appendChild(range.extractContents());
-    range.insertNode(element);
-    x$ = new_range = new Range;
-    x$.selectNode(element);
-    y$ = selection;
-    y$.removeAllRanges();
-    y$.addRange(new_range);
-    normalize(parent_element);
-    return true;
+    var this$ = this;
+    return this.transaction(function(){
+      var ref$, selection, range, parent_element, x$, new_range, y$;
+      ref$ = this$.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
+      if (!range) {
+        return false;
+      }
+      parent_element = get_container_element(range.commonAncestorContainer);
+      element.appendChild(range.extractContents());
+      range.insertNode(element);
+      x$ = new_range = new Range;
+      x$.selectNode(element);
+      y$ = selection;
+      y$.removeAllRanges();
+      y$.addRange(new_range);
+      normalize(parent_element);
+      return true;
+    });
   };
   /**
    * Wrap selected content with empty element of specified tag (wrapper for `wrap_selection_with_element`)
@@ -210,57 +233,60 @@
    * @return {bool}
    */
   x$.unwrap_selection_with_tag = function(tag){
-    var ref$, selection, range, parent_element, before, after, fragment, new_parent_element, new_range, x$, i$, len$, element, j$, ref1$, len1$, child_node, range_start, range_end, y$, z$;
-    ref$ = this.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
-    if (!range) {
-      return false;
-    }
-    parent_element = get_container_element(range.commonAncestorContainer);
-    ref$ = shrink_to_range(parent_element, range), before = ref$[0], after = ref$[1];
-    fragment = range.extractContents();
-    if (parent_element.matches(tag)) {
-      before = wrap_with_tag(before, tag);
-      after = wrap_with_tag(after, tag);
-      fragment.insertBefore(before, fragment.firstChild);
-      fragment.appendChild(after);
-      new_parent_element = parent_element.parentNode;
-      new_parent_element.replaceChild(fragment, parent_element);
-      parent_element = new_parent_element;
-      new_range = new Range;
-      new_range.setStartAfter(before);
-      new_range.setEndBefore(after);
-      x$ = selection;
-      x$.removeAllRanges();
-      x$.addRange(new_range);
-      if (!before.textContent.length) {
-        before.parentNode.removeChild(before);
+    var this$ = this;
+    return this.transaction(function(){
+      var ref$, selection, range, parent_element, before, after, fragment, new_parent_element, new_range, x$, i$, len$, element, j$, ref1$, len1$, child_node, range_start, range_end, y$, z$;
+      ref$ = this$.get_normalized_selection_and_range(), selection = ref$.selection, range = ref$.range;
+      if (!range) {
+        return false;
       }
-      if (!after.textContent.length) {
-        after.parentNode.removeChild(after);
-      }
-    } else {
-      for (i$ = 0, len$ = (ref$ = fragment.querySelectorAll(tag)).length; i$ < len$; ++i$) {
-        element = ref$[i$];
-        for (j$ = 0, len1$ = (ref1$ = element.childNodes).length; j$ < len1$; ++j$) {
-          child_node = ref1$[j$];
-          element.parentNode.insertBefore(child_node, element);
+      parent_element = get_container_element(range.commonAncestorContainer);
+      ref$ = shrink_to_range(parent_element, range), before = ref$[0], after = ref$[1];
+      fragment = range.extractContents();
+      if (parent_element.matches(tag)) {
+        before = wrap_with_tag(before, tag);
+        after = wrap_with_tag(after, tag);
+        fragment.insertBefore(before, fragment.firstChild);
+        fragment.appendChild(after);
+        new_parent_element = parent_element.parentNode;
+        new_parent_element.replaceChild(fragment, parent_element);
+        parent_element = new_parent_element;
+        new_range = new Range;
+        new_range.setStartAfter(before);
+        new_range.setEndBefore(after);
+        x$ = selection;
+        x$.removeAllRanges();
+        x$.addRange(new_range);
+        if (!before.textContent.length) {
+          before.parentNode.removeChild(before);
         }
-        element.parentNode.removeChild(element);
+        if (!after.textContent.length) {
+          after.parentNode.removeChild(after);
+        }
+      } else {
+        for (i$ = 0, len$ = (ref$ = fragment.querySelectorAll(tag)).length; i$ < len$; ++i$) {
+          element = ref$[i$];
+          for (j$ = 0, len1$ = (ref1$ = element.childNodes).length; j$ < len1$; ++j$) {
+            child_node = ref1$[j$];
+            element.parentNode.insertBefore(child_node, element);
+          }
+          element.parentNode.removeChild(element);
+        }
+        range_start = fragment.firstChild;
+        range_end = fragment.lastChild;
+        fragment.insertBefore(before, fragment.firstChild);
+        fragment.appendChild(after);
+        range.insertNode(fragment);
+        y$ = new_range = new Range;
+        y$.setStartBefore(range_start);
+        y$.setEndAfter(range_end);
+        z$ = selection;
+        z$.removeAllRanges();
+        z$.addRange(new_range);
       }
-      range_start = fragment.firstChild;
-      range_end = fragment.lastChild;
-      fragment.insertBefore(before, fragment.firstChild);
-      fragment.appendChild(after);
-      range.insertNode(fragment);
-      y$ = new_range = new Range;
-      y$.setStartBefore(range_start);
-      y$.setEndAfter(range_end);
-      z$ = selection;
-      z$.removeAllRanges();
-      z$.addRange(new_range);
-    }
-    normalize(parent_element);
-    return true;
+      normalize(parent_element);
+      return true;
+    });
   };
   /**
    * Whether selection is wrapped with specified tag
@@ -285,17 +311,20 @@
    * @param {(string|undefined)}	tag_2
    */
   x$.toggle_selection_wrapping_with_tag = function(tag_1, tag_2){
-    if (this.is_selection_wrapped_with_tag(tag_1)) {
-      this.unwrap_selection_with_tag(tag_1);
-      if (tag_2) {
-        this.wrap_selection_with_tag(tag_2);
+    var this$ = this;
+    this.transaction(function(){
+      if (this$.is_selection_wrapped_with_tag(tag_1)) {
+        this$.unwrap_selection_with_tag(tag_1);
+        if (tag_2) {
+          return this$.wrap_selection_with_tag(tag_2);
+        }
+      } else {
+        if (tag_2) {
+          this$.unwrap_selection_with_tag(tag_2);
+        }
+        return this$.wrap_selection_with_tag(tag_1);
       }
-    } else {
-      if (tag_2) {
-        this.unwrap_selection_with_tag(tag_2);
-      }
-      this.wrap_selection_with_tag(tag_1);
-    }
+    });
   };
   (cs.Docplater || (cs.Docplater = {})).simple_scribe_api = simple_scribe_api;
 }).call(this);

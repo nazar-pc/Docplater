@@ -96,6 +96,24 @@ simple_scribe_api::
 	..off_state_changed = (callback) !->
 		@scribe_instance.off('scribe:state-changed', callback)
 	/**
+	 * Convenient transactions wrapper on top of provided by Scribe
+	 * Main differences: returns value returned by callback, calls callbacks with `this`, ignores nested transactions within single parent transaction
+	 *
+	 * @param {Function}
+	 *
+	 * @return {*}
+	 */
+	..transaction = (callback) ->
+		if @_in_transaction
+			return callback.call(@)
+		@_in_transaction	= true
+		var result
+		scribe.transactionManager.run(!->
+			result	:= callback.call(@)
+		)
+		@_in_transaction	= false
+		result
+	/**
 	 * Returns selection and range from `Scribe.api.Selection`, but ensures that some text is selected (if not - selects parent element)
 	 *
 	 * @return {Object} With keys `selection` and `range`
@@ -143,6 +161,7 @@ simple_scribe_api::
 	 * @return {bool}
 	 */
 	..wrap_selection_with_element = (element) ->
+		<~ @transaction
 		{selection, range}	= @get_normalized_selection_and_range()
 		if !range
 			return false
@@ -173,6 +192,7 @@ simple_scribe_api::
 	 * @return {bool}
 	 */
 	..unwrap_selection_with_tag = (tag) ->
+		<~ @transaction
 		{selection, range}	= @get_normalized_selection_and_range()
 		if !range
 			return false
@@ -242,6 +262,7 @@ simple_scribe_api::
 	 * @param {(string|undefined)}	tag_2
 	 */
 	..toggle_selection_wrapping_with_tag = (tag_1, tag_2) !->
+		<~ @transaction
 		if @is_selection_wrapped_with_tag(tag_1)
 			@unwrap_selection_with_tag(tag_1)
 			if tag_2
