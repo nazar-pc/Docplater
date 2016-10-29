@@ -121,9 +121,11 @@ simple_scribe_api::
 	..get_normalized_selection_and_range = ->
 		{selection, range}	= new @scribe_instance.api.Selection
 		if range && !@is_selected_text()
-			new_range	= new Range
-				..selectNode(range.commonAncestorContainer)
-			range		= new_range
+			parent_element	= get_container_element(range.commonAncestorContainer)
+			new_range		= new Range
+				..setStartBefore(parent_element.firstChild)
+				..setEndAfter(parent_element.lastChild)
+			range			= new_range
 			selection
 				..removeAllRanges()
 				..addRange(range)

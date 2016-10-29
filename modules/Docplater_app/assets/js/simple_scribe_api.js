@@ -153,11 +153,13 @@
    * @return {Object} With keys `selection` and `range`
    */
   x$.get_normalized_selection_and_range = function(){
-    var ref$, selection, range, x$, new_range, y$;
+    var ref$, selection, range, parent_element, x$, new_range, y$;
     ref$ = new this.scribe_instance.api.Selection, selection = ref$.selection, range = ref$.range;
     if (range && !this.is_selected_text()) {
+      parent_element = get_container_element(range.commonAncestorContainer);
       x$ = new_range = new Range;
-      x$.selectNode(range.commonAncestorContainer);
+      x$.setStartBefore(parent_element.firstChild);
+      x$.setEndAfter(parent_element.lastChild);
       range = new_range;
       y$ = selection;
       y$.removeAllRanges();
