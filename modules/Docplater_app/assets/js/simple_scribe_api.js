@@ -361,16 +361,18 @@
    * @return {bool}
    */
   x$.insert_element = function(element){
-    var range;
+    var range, this$ = this;
     range = (new this.scribe_instance.api.Selection).range;
     if (!range) {
       return false;
     }
-    if (!this.is_selected_text()) {
-      range.deleteContents();
-    }
-    range.insertNode(element);
-    return true;
+    return this.transaction(function(){
+      if (!this$.is_selected_text()) {
+        range.deleteContents();
+      }
+      range.insertNode(element);
+      return true;
+    });
   };
   /**
    * Insert HTML content, if some content is already selected - it will be replaced

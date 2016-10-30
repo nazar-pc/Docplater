@@ -12,6 +12,10 @@
       is: 'docplate-document-toolbar',
       behaviors: [reduxBehavior],
       properties: {
+        parameters: {
+          statePath: 'document.parameters',
+          type: Object
+        },
         scribe_instance: {
           observer: '_scribe_instance',
           type: Object
@@ -42,7 +46,7 @@
           element = ref$[i$];
           element.disabled = !inline_allowed;
         }
-        parameter_allowed = Boolean(inline_allowed && Object.keys(this.getState().document.parameters).length);
+        parameter_allowed = Boolean(inline_allowed && Object.keys(this.parameters).length);
         this.shadowRoot.querySelector('[parameter-tag]').disabled = !parameter_allowed;
         heading_allowed = Boolean((ref$ = selection.baseNode) != null ? typeof (ref1$ = ref$.parentNode).matches == 'function' ? ref1$.matches('h1, h2, h3, p') : void 8 : void 8);
         for (i$ = 0, len$ = (ref1$ = this.shadowRoot.querySelectorAll('[heading-tag]')).length; i$ < len$; ++i$) {
@@ -69,7 +73,7 @@
       _insert_parameter: function(){
         var options, parameters, modal, this$ = this;
         options = '';
-        parameters = Object.keys(this.getState().document.parameters).map(function(parameter){
+        parameters = Object.keys(this.parameters).map(function(parameter){
           return "<button is=\"cs-button\" type=\"button\" parameter=\"" + parameter + "\">@" + parameter + "</button> ";
         }).reduce(function(prev, current){
           return prev + current;

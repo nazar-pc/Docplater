@@ -12,6 +12,9 @@ Polymer(
 		redux-behavior
 	]
 	properties		:
+		parameters		:
+			statePath	: 'document.parameters'
+			type		: Object
 		scribe_instance	:
 			observer	: '_scribe_instance'
 			type		: Object
@@ -31,7 +34,7 @@ Polymer(
 		inline_allowed		= Boolean(range)
 		for element in @shadowRoot.querySelectorAll('[inline-tag]')
 			element.disabled	= !inline_allowed
-		parameter_allowed	= Boolean(inline_allowed && Object.keys(@getState().document.parameters).length)
+		parameter_allowed	= Boolean(inline_allowed && Object.keys(@parameters).length)
 		@shadowRoot.querySelector('[parameter-tag]')
 			.disabled	= !parameter_allowed
 		heading_allowed	= Boolean(
@@ -53,7 +56,7 @@ Polymer(
 			@ssa.toggle_selection_wrapping_with_tag('h3', "h#level")
 	_insert_parameter : !->
 		options		= ''
-		parameters	= Object.keys(@getState().document.parameters)
+		parameters	= Object.keys(@parameters)
 			.map (parameter) ->
 				"""<button is="cs-button" type="button" parameter="#parameter">@#parameter</button> """
 			.reduce (prev, current) ->

@@ -310,6 +310,7 @@ simple_scribe_api::
 		range	= (new @scribe_instance.api.Selection).range
 		if !range
 			return false
+		<~ @transaction
 		if !@is_selected_text()
 			range.deleteContents()
 		range.insertNode(element)
