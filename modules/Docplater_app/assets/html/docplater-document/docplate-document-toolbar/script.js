@@ -7,60 +7,83 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  Polymer({
-    is: 'docplate-document-toolbar',
-    properties: {
-      scribe_instance: {
-        observer: '_scribe_instance',
-        type: Object
-      }
-    },
-    _scribe_instance: function(){
-      var this$ = this;
-      require(['scribe-plugin-toolbar']).then(function(arg$){
-        var scribePluginToolbar;
-        scribePluginToolbar = arg$[0];
-        this$.scribe_instance.use(scribePluginToolbar(this$.$.toolbar));
-        this$.ssa = new cs.Docplater.simple_scribe_api(this$.scribe_instance);
-        this$.ssa.on_state_changed(function(){
-          if (this$._state_changed_timeout) {
-            clearTimeout(this$._state_changed_timeout);
-          }
-          this$._state_changed_timeout = setTimeout(function(){
-            this$._state_changed();
+  cs.Docplater.Redux.behavior.then(function(reduxBehavior){
+    Polymer({
+      is: 'docplate-document-toolbar',
+      behaviors: [reduxBehavior],
+      properties: {
+        scribe_instance: {
+          observer: '_scribe_instance',
+          type: Object
+        }
+      },
+      _scribe_instance: function(){
+        var this$ = this;
+        require(['scribe-plugin-toolbar']).then(function(arg$){
+          var scribePluginToolbar;
+          scribePluginToolbar = arg$[0];
+          this$.scribe_instance.use(scribePluginToolbar(this$.$.toolbar));
+          this$.ssa = new cs.Docplater.simple_scribe_api(this$.scribe_instance);
+          this$.ssa.on_state_changed(function(){
+            if (this$._state_changed_timeout) {
+              clearTimeout(this$._state_changed_timeout);
+            }
+            this$._state_changed_timeout = setTimeout(function(){
+              this$._state_changed();
+            });
           });
         });
-      });
-    },
-    _state_changed: function(){
-      var ref$, selection, range, inline_allowed, i$, len$, element, heading_allowed, ref1$;
-      ref$ = new this.scribe_instance.api.Selection, selection = ref$.selection, range = ref$.range;
-      inline_allowed = Boolean(range);
-      for (i$ = 0, len$ = (ref$ = this.shadowRoot.querySelectorAll('[inline-tag]')).length; i$ < len$; ++i$) {
-        element = ref$[i$];
-        element.disabled = !inline_allowed;
+      },
+      _state_changed: function(){
+        var ref$, selection, range, inline_allowed, i$, len$, element, parameter_allowed, heading_allowed, ref1$;
+        ref$ = new this.scribe_instance.api.Selection, selection = ref$.selection, range = ref$.range;
+        inline_allowed = Boolean(range);
+        for (i$ = 0, len$ = (ref$ = this.shadowRoot.querySelectorAll('[inline-tag]')).length; i$ < len$; ++i$) {
+          element = ref$[i$];
+          element.disabled = !inline_allowed;
+        }
+        parameter_allowed = Boolean(inline_allowed && Object.keys(this.getState().document.parameters).length);
+        this.shadowRoot.querySelector('[parameter-tag]').disabled = !parameter_allowed;
+        heading_allowed = Boolean((ref$ = selection.baseNode) != null ? typeof (ref1$ = ref$.parentNode).matches == 'function' ? ref1$.matches('h1, h2, h3, p') : void 8 : void 8);
+        for (i$ = 0, len$ = (ref1$ = this.shadowRoot.querySelectorAll('[heading-tag]')).length; i$ < len$; ++i$) {
+          element = ref1$[i$];
+          element.disabled = !heading_allowed;
+        }
+      },
+      _inline_tag_toggle: function(e){
+        this.ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'));
+      },
+      _heading_tag_toggle: function(e){
+        var level;
+        level = parseInt(e.target.getAttribute('level'));
+        if (this.ssa.is_selection_wrapped_with_tag("h" + level) || this.ssa.is_selection_wrapped_with_tag('p')) {
+          this.ssa.toggle_selection_wrapping_with_tag("h" + level, 'p');
+        } else if (level !== 1 && this.ssa.is_selection_wrapped_with_tag('h1')) {
+          this.ssa.toggle_selection_wrapping_with_tag('h1', "h" + level);
+        } else if (level !== 2 && this.ssa.is_selection_wrapped_with_tag('h2')) {
+          this.ssa.toggle_selection_wrapping_with_tag('h2', "h" + level);
+        } else if (level !== 3 && this.ssa.is_selection_wrapped_with_tag('h3')) {
+          this.ssa.toggle_selection_wrapping_with_tag('h3', "h" + level);
+        }
+      },
+      _insert_parameter: function(){
+        var options, parameters, modal, this$ = this;
+        options = '';
+        parameters = Object.keys(this.getState().document.parameters).map(function(parameter){
+          return "<button is=\"cs-button\" type=\"button\" parameter=\"" + parameter + "\">@" + parameter + "</button> ";
+        }).reduce(function(prev, current){
+          return prev + current;
+        });
+        modal = cs.ui.simple_modal("<h1>Click parameter to insert</h1>\n" + parameters);
+        modal.addEventListener('click', function(e){
+          var parameter;
+          parameter = e.target.getAttribute('parameter');
+          if (parameter) {
+            this$.ssa.insert_html("<docplater-document-parameter>" + parameter + "</docplater-document-parameter>");
+          }
+          modal.close();
+        });
       }
-      heading_allowed = Boolean((ref$ = selection.baseNode) != null ? typeof (ref1$ = ref$.parentNode).matches == 'function' ? ref1$.matches('h1, h2, h3, p') : void 8 : void 8);
-      for (i$ = 0, len$ = (ref1$ = this.shadowRoot.querySelectorAll('[heading-tag]')).length; i$ < len$; ++i$) {
-        element = ref1$[i$];
-        element.disabled = !heading_allowed;
-      }
-    },
-    _inline_tag_toggle: function(e){
-      this.ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'));
-    },
-    _heading_tag_toggle: function(e){
-      var level;
-      level = parseInt(e.target.getAttribute('level'));
-      if (this.ssa.is_selection_wrapped_with_tag("h" + level) || this.ssa.is_selection_wrapped_with_tag('p')) {
-        this.ssa.toggle_selection_wrapping_with_tag("h" + level, 'p');
-      } else if (level !== 1 && this.ssa.is_selection_wrapped_with_tag('h1')) {
-        this.ssa.toggle_selection_wrapping_with_tag('h1', "h" + level);
-      } else if (level !== 2 && this.ssa.is_selection_wrapped_with_tag('h2')) {
-        this.ssa.toggle_selection_wrapping_with_tag('h2', "h" + level);
-      } else if (level !== 3 && this.ssa.is_selection_wrapped_with_tag('h3')) {
-        this.ssa.toggle_selection_wrapping_with_tag('h3', "h" + level);
-      }
-    }
+    });
   });
 }).call(this);

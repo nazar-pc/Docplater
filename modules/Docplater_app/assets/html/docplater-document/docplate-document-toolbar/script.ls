@@ -5,8 +5,12 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
+redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is				: 'docplate-document-toolbar'
+	behaviors	: [
+		redux-behavior
+	]
 	properties		:
 		scribe_instance	:
 			observer	: '_scribe_instance'
@@ -27,6 +31,9 @@ Polymer(
 		inline_allowed		= Boolean(range)
 		for element in @shadowRoot.querySelectorAll('[inline-tag]')
 			element.disabled	= !inline_allowed
+		parameter_allowed	= Boolean(inline_allowed && Object.keys(@getState().document.parameters).length)
+		@shadowRoot.querySelector('[parameter-tag]')
+			.disabled	= !parameter_allowed
 		heading_allowed	= Boolean(
 			selection.baseNode?.parentNode.matches?('h1, h2, h3, p')
 		)
@@ -44,4 +51,23 @@ Polymer(
 			@ssa.toggle_selection_wrapping_with_tag('h2', "h#level")
 		else if level != 3 && @ssa.is_selection_wrapped_with_tag('h3')
 			@ssa.toggle_selection_wrapping_with_tag('h3', "h#level")
+	_insert_parameter : !->
+		options		= ''
+		parameters	= Object.keys(@getState().document.parameters)
+			.map (parameter) ->
+				"""<button is="cs-button" type="button" parameter="#parameter">@#parameter</button> """
+			.reduce (prev, current) ->
+				prev + current
+		modal		= cs.ui.simple_modal(
+			"""
+				<h1>Click parameter to insert</h1>
+				#parameters
+			"""
+		)
+		modal.addEventListener('click', (e) !~>
+			parameter	= e.target.getAttribute('parameter')
+			if parameter
+				@ssa.insert_html("<docplater-document-parameter>#parameter</docplater-document-parameter>")
+			modal.close()
+		)
 )
