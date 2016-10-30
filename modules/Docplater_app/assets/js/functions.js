@@ -51,7 +51,7 @@
   };
   x$.get_list_of_allowed_tags = function(){
     var list, tags, i$, len$, tag;
-    list = ['p', 'div', 'b', 'strong', 'i', 'em', 'u', 'strike', 'sup', 'sub', 'img', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'docplater-document-clause', 'docplater-document-parameter'];
+    list = ['p', 'div', 'b', 'strong', 'i', 'em', 'u', 's', 'strike', 'sup', 'sub', 'img', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'docplater-document-clause', 'docplater-document-parameter'];
     tags = {};
     for (i$ = 0, len$ = list.length; i$ < len$; ++i$) {
       tag = list[i$];

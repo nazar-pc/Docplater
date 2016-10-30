@@ -36,7 +36,7 @@ cs.{}Docplater.{}functions
 	..get_list_of_allowed_tags = ->
 		list	= [
 			'p', 'div'
-			'b', 'strong', 'i', 'em', 'u', 'strike', 'sup', 'sub'
+			'b', 'strong', 'i', 'em', 'u', 's', 'strike', 'sup', 'sub'
 			'img', 'br'
 			'table', 'thead', 'tbody', 'tr', 'th', 'td'
 			'h1', 'h2', 'h3', 'h4', 'h5', 'h6'
