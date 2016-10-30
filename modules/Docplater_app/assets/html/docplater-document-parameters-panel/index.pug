@@ -8,13 +8,15 @@ dom-module#docplater-document-parameters-panel
 				template(is="dom-repeat" items="[[map.parameters]]" as="parameter")
 					label
 						| @[[parameter.name]]:
-						input(
-							is="cs-input-text"
-							type="text"
-							value="[[parameter.value]]"
-							placeholder="[[parameter.default_value]]"
-							on-focus="_parameter_highlight"
-							on-value-changed="_parameter_changed"
-							on-blur="_parameter_unhighlight"
-						)
+						.line
+							input(
+								is="cs-input-text"
+								type="text"
+								value="[[parameter.value]]"
+								placeholder="[[parameter.default_value]]"
+								on-focus="_parameter_highlight"
+								on-value-changed="_parameter_changed"
+								on-blur="_parameter_unhighlight"
+							)
+							button(is="cs-button" type="button" icon="minus" hidden="[[and(parameter.clause_hash)]]" on-tap="_delete_parameter")
 	script(src="script.js")

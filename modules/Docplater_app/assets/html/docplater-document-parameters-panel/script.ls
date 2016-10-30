@@ -64,4 +64,11 @@ Polymer(
 			clause_index	: e.model.parameter.clause_index
 			value			: e.target.value
 		)
+	_delete_parameter : (e) !->
+		parameter	= e.model.parameter.name
+		cs.ui.confirm("Are you sure you want to delete parameter @#parameter?").then !~>
+			@dispatch({
+				type	: 'PARAMETER_DELETE'
+				name	: parameter
+			})
 )

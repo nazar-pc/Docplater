@@ -17,6 +17,10 @@
       },
       properties: {
         display_value: String,
+        exists: {
+          type: Boolean,
+          value: false
+        },
         highlight: {
           reflectToAttribute: true,
           type: Boolean
@@ -49,6 +53,11 @@
         } else {
           parameter = document_state.parameters[name];
         }
+        this.exists = Boolean(parameter);
+        if (!parameter) {
+          return;
+        }
+        this.non_existing = '';
         effective_value = parameter.value || parameter.default_value;
         upstream_parameter = this._get_upstream_parameter(effective_value);
         if (upstream_parameter) {
@@ -73,6 +82,9 @@
         }
       },
       _focus_in: function(){
+        if (!this.exists) {
+          return;
+        }
         this.dispatch({
           type: 'PARAMETER_HIGHLIGHT',
           name: this.name,

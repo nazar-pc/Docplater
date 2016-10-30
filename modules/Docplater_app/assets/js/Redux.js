@@ -58,6 +58,8 @@
     case 'PARAMETER_UPDATE_VALUE':
       parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
       return state.setIn(parameter.concat('value'), action.value);
+    case 'PARAMETER_DELETE':
+      return state.setIn(['document', 'parameters'], state.document.parameters.without(action.name));
     case 'PREVIEW_TOGGLE':
       return state.merge({
         preview: !state.preview

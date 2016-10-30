@@ -17,6 +17,9 @@ Polymer(
 		tabindex		: 0
 	properties		:
 		display_value	: String
+		exists			:
+			type	: Boolean
+			value	: false
 		highlight		:
 			reflectToAttribute	: true
 			type				: Boolean
@@ -40,6 +43,10 @@ Polymer(
 			parameter	= document_state.clauses[@clause.hash][@clause.index].parameters[name]
 		else
 			parameter	= document_state.parameters[name]
+		@exists	= Boolean(parameter)
+		if !parameter
+			return
+		@non_existing		= ''
 		effective_value		= parameter.value || parameter.default_value
 		upstream_parameter	= @_get_upstream_parameter(effective_value)
 		if upstream_parameter
@@ -57,6 +64,8 @@ Polymer(
 			name	= value.substring(1)
 			@getState().document.parameters[name] || null
 	_focus_in : !->
+		if !@exists
+			return
 		@dispatch(
 			type			: 'PARAMETER_HIGHLIGHT'
 			name			: @name

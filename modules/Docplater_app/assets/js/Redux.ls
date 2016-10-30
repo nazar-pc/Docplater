@@ -54,6 +54,8 @@ function reducer (state = initial_state, action)
 		when 'PARAMETER_UPDATE_VALUE'
 			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index)
 			state.setIn(parameter.concat('value'), action.value)
+		when 'PARAMETER_DELETE'
+			state.setIn(['document', 'parameters'], state.document.parameters.without(action.name))
 		when 'PREVIEW_TOGGLE'
 			state.merge(
 				preview	: !state.preview

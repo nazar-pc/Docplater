@@ -96,6 +96,16 @@
           clause_index: e.model.parameter.clause_index,
           value: e.target.value
         });
+      },
+      _delete_parameter: function(e){
+        var parameter, this$ = this;
+        parameter = e.model.parameter.name;
+        cs.ui.confirm("Are you sure you want to delete parameter @" + parameter + "?").then(function(){
+          this$.dispatch({
+            type: 'PARAMETER_DELETE',
+            name: parameter
+          });
+        });
       }
     });
   });

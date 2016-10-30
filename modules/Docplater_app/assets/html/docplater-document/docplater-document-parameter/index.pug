@@ -1,6 +1,6 @@
 dom-module#docplater-document-parameter
 	link(rel="import" href="style.css" type="css")
 	template
-		div(hidden="[[preview]]") @[[name]]
-		div(hidden="[[!preview]]") [[parameter.display_value]]
+		div(hidden="[[and(preview, exists)]]" exists$="[[exists]]") @[[name]]
+		div(hidden="[[!and(preview, exists)]]" exists$="[[exists]]") [[parameter.display_value]]
 	script(src="script.js")

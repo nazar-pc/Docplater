@@ -35,8 +35,12 @@ h2 {
 		display : block;
 
 		& + label,
-		input {
+		.line {
 			margin-top : .3rem;
+		}
+
+		.line {
+			display : flex;
 		}
 	}
 }

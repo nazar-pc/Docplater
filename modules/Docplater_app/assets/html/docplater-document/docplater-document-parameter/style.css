@@ -1,1 +1,1 @@
-:host{box-sizing:border-box;color:blue;display:inline-block;@apply --cs-no-selection}:host(:focus){outline:1px dotted blue}:host([highlight]){background:yellow}
+:host{box-sizing:border-box;display:inline-block;@apply --cs-no-selection}:host(:focus){outline:1px dotted blue}:host([highlight]){background:yellow}div{color:blue}div:not([exists]){color:red}
