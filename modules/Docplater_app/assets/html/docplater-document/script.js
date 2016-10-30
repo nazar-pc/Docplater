@@ -36,14 +36,11 @@
         if (this.scribe_instance) {
           return;
         }
-        require(['scribe-editor', 'scribe-plugin-heading-command', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-keyboard-shortcuts', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent']).then(function(arg$){
-          var scribeEditor, scribePluginHeadingCommand, scribePluginInlineStylesToElements, scribePluginKeyboardShortcuts, scribePluginSanitizer, scribePluginTabIndent, x$;
-          scribeEditor = arg$[0], scribePluginHeadingCommand = arg$[1], scribePluginInlineStylesToElements = arg$[2], scribePluginKeyboardShortcuts = arg$[3], scribePluginSanitizer = arg$[4], scribePluginTabIndent = arg$[5];
+        require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-keyboard-shortcuts', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent']).then(function(arg$){
+          var scribeEditor, scribePluginInlineStylesToElements, scribePluginKeyboardShortcuts, scribePluginSanitizer, scribePluginTabIndent, x$;
+          scribeEditor = arg$[0], scribePluginInlineStylesToElements = arg$[1], scribePluginKeyboardShortcuts = arg$[2], scribePluginSanitizer = arg$[3], scribePluginTabIndent = arg$[4];
           this$.scribe_instance = new scribeEditor(this$.$.content);
           x$ = this$.scribe_instance;
-          x$.use(scribePluginHeadingCommand(1, true));
-          x$.use(scribePluginHeadingCommand(2, true));
-          x$.use(scribePluginHeadingCommand(3, true));
           x$.use(scribePluginInlineStylesToElements());
           x$.use(scribePluginKeyboardShortcuts());
           x$.use(scribePluginSanitizer({

@@ -17,7 +17,6 @@
 	"_"           : "lodash is hardcoded because otherwise broken version is installed (see https://github.com/fxpio/composer-asset-plugin/issues/260)",
 	"require_npm" : {
 		"scribe-editor"                           : "^3.2",
-		"scribe-plugin-heading-command"           : "^0.1",
 		"scribe-plugin-inline-styles-to-elements" : "^0.1",
 		"scribe-plugin-keyboard-shortcuts"        : "^0.1",
 		"scribe-plugin-sanitizer"                 : "^0.1",

@@ -31,7 +31,6 @@ Polymer(
 			return
 		require([
 			'scribe-editor'
-			'scribe-plugin-heading-command'
 			'scribe-plugin-inline-styles-to-elements'
 			'scribe-plugin-keyboard-shortcuts'
 			'scribe-plugin-sanitizer'
@@ -39,7 +38,6 @@ Polymer(
 		]).then(
 			([
 				scribe-editor
-				scribe-plugin-heading-command
 				scribe-plugin-inline-styles-to-elements
 				scribe-plugin-keyboard-shortcuts
 				scribe-plugin-sanitizer
@@ -47,9 +45,6 @@ Polymer(
 			]) !~>
 					@scribe_instance	= new scribe-editor(@$.content)
 					@scribe_instance
-						..use(scribe-plugin-heading-command(1, true))
-						..use(scribe-plugin-heading-command(2, true))
-						..use(scribe-plugin-heading-command(3, true))
 						..use(scribe-plugin-inline-styles-to-elements())
 						..use(scribe-plugin-keyboard-shortcuts())
 						..use(scribe-plugin-sanitizer(
