@@ -4,6 +4,7 @@ tags_allowed_for_normalization	= {
 	i		: true
 	em		: true
 	u		: true
+	s		: true
 	strike	: true
 	sup		: true
 	sub		: true
@@ -298,5 +299,32 @@ simple_scribe_api::
 			if tag_2
 				@unwrap_selection_with_tag(tag_2)
 			@wrap_selection_with_tag(tag_1)
+	/**
+	 * Insert element or document fragment, if some content is already selected - it will be replaced
+	 *
+	 * @param {(DocumentFragment|Element)} element
+	 *
+	 * @return {bool}
+	 */
+	..insert_element = (element) ->
+		range	= (new @scribe_instance.api.Selection).range
+		if !range
+			return false
+		if !@is_selected_text()
+			range.deleteContents()
+		range.insertNode(element)
+		true
+	/**
+	 * Insert HTML content, if some content is already selected - it will be replaced
+	 *
+	 * @param {string} content
+	 *
+	 * @return {bool}
+	 */
+	..insert_html = (content) ->
+		range	= (new @scribe_instance.api.Selection).range
+		if !range
+			return false
+		@insert_element(range.createContextualFragment(content))
 #	simple_scribe_api
 cs.{}Docplater.simple_scribe_api = simple_scribe_api

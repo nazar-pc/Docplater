@@ -7,6 +7,7 @@
     i: true,
     em: true,
     u: true,
+    s: true,
     strike: true,
     sup: true,
     sub: true
@@ -351,6 +352,40 @@
         return this$.wrap_selection_with_tag(tag_1);
       }
     });
+  };
+  /**
+   * Insert element or document fragment, if some content is already selected - it will be replaced
+   *
+   * @param {(DocumentFragment|Element)} element
+   *
+   * @return {bool}
+   */
+  x$.insert_element = function(element){
+    var range;
+    range = (new this.scribe_instance.api.Selection).range;
+    if (!range) {
+      return false;
+    }
+    if (!this.is_selected_text()) {
+      range.deleteContents();
+    }
+    range.insertNode(element);
+    return true;
+  };
+  /**
+   * Insert HTML content, if some content is already selected - it will be replaced
+   *
+   * @param {string} content
+   *
+   * @return {bool}
+   */
+  x$.insert_html = function(content){
+    var range;
+    range = (new this.scribe_instance.api.Selection).range;
+    if (!range) {
+      return false;
+    }
+    return this.insert_element(range.createContextualFragment(content));
   };
   (cs.Docplater || (cs.Docplater = {})).simple_scribe_api = simple_scribe_api;
 }).call(this);
