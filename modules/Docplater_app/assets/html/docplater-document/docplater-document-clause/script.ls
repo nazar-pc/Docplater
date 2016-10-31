@@ -16,7 +16,6 @@ Polymer(
 		data		: Object
 		hash		: String
 		index		: Number
-		parameters	: Object
 	created : !->
 		@attached_once
 			.then ~> cs.Docplater.functions.get_clause(@hash)

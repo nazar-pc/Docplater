@@ -16,8 +16,7 @@
     properties: {
       data: Object,
       hash: String,
-      index: Number,
-      parameters: Object
+      index: Number
     },
     created: function(){
       var this$ = this;

@@ -59,22 +59,16 @@ HTML;
 	"hash"       : "43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008",
 	"parameters" : {
 		"company_name" : {
-			"type"          : 0,
 			"value"         : "Evil corporation",
-			"default_value" : "",
-			"options"       : {}
+			"default_value" : ""
 		},
 		"consultant_name"  : {
-			"type"          : 0,
 			"value"         : "John Galt",
-			"default_value" : "",
-			"options"       : {}
+			"default_value" : ""
 		},
 		"date"         : {
-			"type"          : 2,
 			"value"         : "42 January 1984",
-			"default_value" : "",
-			"options"       : {}
+			"default_value" : ""
 		}
 	},
 	"clauses"    : {
@@ -82,56 +76,40 @@ HTML;
 			{
 				"parameters" : {
 					"by" : {
-						"type"          : 0,
 						"value"         : "@company_name",
-						"default_value" : "",
-						"options"       : {}
+						"default_value" : ""
 					},
 					"name" : {
-						"type"          : 0,
 						"value"         : "",
-						"default_value" : "",
-						"options"       : {}
+						"default_value" : ""
 					},
 					"title" : {
-						"type"          : 0,
 						"value"         : "",
-						"default_value" : "",
-						"options"       : {}
+						"default_value" : ""
 					},
 					"date" : {
-						"type"          : 2,
 						"value"         : "",
-						"default_value" : "@date",
-						"options"       : {}
+						"default_value" : "@date"
 					}
 				}
 			},
 			{
 				"parameters" : {
 					"by" : {
-						"type"          : 0,
 						"value"         : "@consultant_name",
-						"default_value" : "",
-						"options"       : {}
+						"default_value" : ""
 					},
 					"name" : {
-						"type"          : 0,
 						"value"         : "",
-						"default_value" : "",
-						"options"       : {}
+						"default_value" : ""
 					},
 					"title" : {
-						"type"          : 0,
 						"value"         : "",
-						"default_value" : "",
-						"options"       : {}
+						"default_value" : ""
 					},
 					"date" : {
-						"type"          : 2,
 						"value"         : "",
-						"default_value" : "@date",
-						"options"       : {}
+						"default_value" : "@date"
 					}
 				}
 			}
@@ -159,28 +137,12 @@ HTML;
 {
 	"hash"       : "9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c",
 	"title"      : "Demo template",
-	"parameters" : {
-		"by" : {
-			"type"          : 0,
-			"default_value" : "",
-			"options"       : {}
-		},
-		"name" : {
-			"type"          : 0,
-			"default_value" : "",
-			"options"       : {}
-		},
-		"title" : {
-			"type"          : 0,
-			"default_value" : "",
-			"options"       : {}
-		},
-		"date" : {
-			"type"          : 2,
-			"default_value" : "@date",
-			"options"       : {}
-		}
-	}
+	"parameters" : [
+		"by",
+		"name",
+		"title",
+		"date"
+	]
 }
 JSON
 			);
