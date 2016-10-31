@@ -373,7 +373,9 @@
       y$.primary = true;
       y$.action = 'close';
       y$.bind = modal;
-      y$.addEventListener('click', resolve);
+      y$.addEventListener('click', function(){
+        resolve();
+      });
       z$ = modal;
       z$.ok = ok;
       z$.appendChild(ok);
@@ -406,12 +408,20 @@
     y$.primary = true;
     y$.action = 'close';
     y$.bind = modal;
-    y$.addEventListener('click', ok_callback || function(){});
+    y$.addEventListener('click', function(){
+      if (typeof ok_callback == 'function') {
+        ok_callback();
+      }
+    });
     z$ = cancel = document.createElement('button', 'cs-button');
     z$.innerHTML = 'Cancel';
     z$.action = 'close';
     z$.bind = modal;
-    z$.addEventListener('click', cancel_callback || function(){});
+    z$.addEventListener('click', function(){
+      if (typeof cancel_callback == 'function') {
+        cancel_callback();
+      }
+    });
     z1$ = modal;
     z1$.ok = ok;
     z1$.cancel = cancel;
@@ -428,8 +438,56 @@
       return modal;
     } else {
       return new Promise(function(resolve, reject){
-        ok.addEventListener('click', resolve);
-        cancel.addEventListener('click', reject);
+        ok.addEventListener('click', function(){
+          resolve();
+        });
+        cancel.addEventListener('click', function(){
+          reject();
+        });
+      });
+    }
+  };
+  /**
+   * Prompt modal
+   *
+   * `ok_callback` will be called or Promise will be resolved with value that user enter in text field
+   *
+   * @param {(HTMLElement|jQuery|string)} content
+   * @param {Function}                    ok_callback
+   * @param {Function}                    cancel_callback
+      *
+   * @return {(HTMLElement|Promise)}
+   */
+  x$.prompt = function(content, ok_callback, cancel_callback){
+    var modal, x$, input, ok, cancel;
+    if (content instanceof Function) {
+      content = content.toString();
+    }
+    if (typeof content === 'string' && content.indexOf('<') === -1) {
+      content = "<h3>" + content + "</h3>";
+    }
+    modal = cs.ui.confirm("" + content + "\n<p><input is=\"cs-input-text\" type=\"text\"></p>", function(){});
+    x$ = modal.input = modal.querySelector('input');
+    x$.focus();
+    input = modal.input, ok = modal.ok, cancel = modal.cancel;
+    if (ok_callback) {
+      ok.addEventListener('click', function(){
+        ok_callback(input.value);
+      });
+      cancel.addEventListener('click', function(){
+        if (typeof cancel_callback == 'function') {
+          cancel_callback();
+        }
+      });
+      return modal;
+    } else {
+      return new Promise(function(resolve, reject){
+        ok.addEventListener('click', function(){
+          resolve(input.value);
+        });
+        cancel.addEventListener('click', function(){
+          reject();
+        });
       });
     }
   };

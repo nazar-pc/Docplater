@@ -291,7 +291,9 @@ cs.{}ui
 				..primary	= true
 				..action	= 'close'
 				..bind		= modal
-				..addEventListener('click', resolve)
+				..addEventListener('click', !->
+					resolve()
+				)
 			modal
 				..ok	= ok
 				..appendChild(ok)
@@ -319,12 +321,16 @@ cs.{}ui
 			..primary	= true
 			..action	= 'close'
 			..bind		= modal
-			..addEventListener('click', ok_callback || ->)
+			..addEventListener('click', !->
+				ok_callback?()
+			)
 		cancel	= document.createElement('button', 'cs-button')
 			..innerHTML	= 'Cancel'
 			..action	= 'close'
 			..bind		= modal
-			..addEventListener('click', cancel_callback || ->)
+			..addEventListener('click', !->
+				cancel_callback?()
+			)
 		modal
 			..ok		= ok
 			..cancel	= cancel
@@ -339,8 +345,54 @@ cs.{}ui
 			modal
 		else
 			new Promise (resolve, reject) !->
-				ok.addEventListener('click', resolve)
-				cancel.addEventListener('click', reject)
+				ok.addEventListener('click', !->
+					resolve()
+				)
+				cancel.addEventListener('click', !->
+					reject()
+				)
+	/**
+	 * Prompt modal
+	 *
+	 * `ok_callback` will be called or Promise will be resolved with value that user enter in text field
+	 *
+	 * @param {(HTMLElement|jQuery|string)} content
+	 * @param {Function}                    ok_callback
+	 * @param {Function}                    cancel_callback
+     *
+	 * @return {(HTMLElement|Promise)}
+	 */
+	..prompt = (content, ok_callback, cancel_callback) ->
+		if content instanceof Function
+			content = content.toString()
+		if typeof content == 'string' && content.indexOf('<') == -1
+			content = "<h3>#{content}</h3>"
+		modal				= cs.ui.confirm(
+			"""
+				#content
+				<p><input is="cs-input-text" type="text"></p>
+			"""
+			->
+		)
+		modal.input			= modal.querySelector('input')
+			..focus()
+		{input, ok, cancel}	= modal
+		if ok_callback
+			ok.addEventListener('click', !->
+				ok_callback(input.value)
+			)
+			cancel.addEventListener('click', !->
+				cancel_callback?()
+			)
+			modal
+		else
+			new Promise (resolve, reject) !->
+				ok.addEventListener('click', !->
+					resolve(input.value)
+				)
+				cancel.addEventListener('click', !->
+					reject()
+				)
 	/**
 	 * Notify
 	 *
