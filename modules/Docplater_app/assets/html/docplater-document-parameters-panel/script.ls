@@ -64,11 +64,27 @@ Polymer(
 			clause_index	: e.model.parameter.clause_index
 			value			: e.target.value
 		)
+	_add_parameter : !->
+		cs.ui.prompt('New parameter name (without @ prefix):').then (name) !~>
+			@dispatch(
+				type	: 'PARAMETER_ADD'
+				name	: name
+			)
+	_edit_parameter : (e) !->
+		name	= e.model.parameter.name
+		cs.ui.prompt("Default value for parameter #name:").then (default_value) !~>
+			@dispatch(
+				type			: 'PARAMETER_SET_DEFAULT_VALUE'
+				name			: name
+				clause_hash		: e.model.parameter.clause_hash
+				clause_index	: e.model.parameter.clause_index
+				default_value	: default_value
+			)
 	_delete_parameter : (e) !->
-		parameter	= e.model.parameter.name
-		cs.ui.confirm("Are you sure you want to delete parameter @#parameter?").then !~>
-			@dispatch({
+		name	= e.model.parameter.name
+		cs.ui.confirm("Are you sure you want to delete parameter @#name?").then !~>
+			@dispatch(
 				type	: 'PARAMETER_DELETE'
-				name	: parameter
-			})
+				name	: name
+			)
 )

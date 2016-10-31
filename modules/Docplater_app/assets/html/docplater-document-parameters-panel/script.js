@@ -97,13 +97,35 @@
           value: e.target.value
         });
       },
+      _add_parameter: function(){
+        var this$ = this;
+        cs.ui.prompt('New parameter name (without @ prefix):').then(function(name){
+          this$.dispatch({
+            type: 'PARAMETER_ADD',
+            name: name
+          });
+        });
+      },
+      _edit_parameter: function(e){
+        var name, this$ = this;
+        name = e.model.parameter.name;
+        cs.ui.prompt("Default value for parameter " + name + ":").then(function(default_value){
+          this$.dispatch({
+            type: 'PARAMETER_SET_DEFAULT_VALUE',
+            name: name,
+            clause_hash: e.model.parameter.clause_hash,
+            clause_index: e.model.parameter.clause_index,
+            default_value: default_value
+          });
+        });
+      },
       _delete_parameter: function(e){
-        var parameter, this$ = this;
-        parameter = e.model.parameter.name;
-        cs.ui.confirm("Are you sure you want to delete parameter @" + parameter + "?").then(function(){
+        var name, this$ = this;
+        name = e.model.parameter.name;
+        cs.ui.confirm("Are you sure you want to delete parameter @" + name + "?").then(function(){
           this$.dispatch({
             type: 'PARAMETER_DELETE',
-            name: parameter
+            name: name
           });
         });
       }

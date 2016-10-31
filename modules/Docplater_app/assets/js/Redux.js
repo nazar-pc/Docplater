@@ -55,11 +55,19 @@
         return state;
       }
       break;
+    case 'PARAMETER_ADD':
+      return state.setIn(['document', 'parameters', action.name], {
+        value: '',
+        default_value: ''
+      });
+    case 'PARAMETER_SET_DEFAULT_VALUE':
+      parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
+      return state.setIn(parameter.concat('default_value'), action.default_value);
+    case 'PARAMETER_DELETE':
+      return state.setIn(['document', 'parameters'], state.document.parameters.without(action.name));
     case 'PARAMETER_UPDATE_VALUE':
       parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
       return state.setIn(parameter.concat('value'), action.value);
-    case 'PARAMETER_DELETE':
-      return state.setIn(['document', 'parameters'], state.document.parameters.without(action.name));
     case 'PREVIEW_TOGGLE':
       return state.merge({
         preview: !state.preview

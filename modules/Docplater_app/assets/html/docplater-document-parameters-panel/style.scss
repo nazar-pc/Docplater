@@ -34,13 +34,13 @@ h2 {
 	label {
 		display : block;
 
-		& + label,
-		.line {
+		& + label {
 			margin-top : .3rem;
 		}
+	}
 
-		.line {
-			display : flex;
-		}
+	.line {
+		display    : flex;
+		margin-top : .3rem;
 	}
 }
