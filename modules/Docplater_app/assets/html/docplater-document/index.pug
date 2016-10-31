@@ -3,7 +3,7 @@ dom-module#docplater-document
 	template
 		.panel
 			docplate-document-toolbar(scribe_instance="[[scribe_instance]]")
-			button(is="cs-button" type="button" on-tap="_toggle_preview") Toggle preview [[preview]]
+			button(is="cs-button" type="button" on-tap="_toggle_preview" icon="[[if(preview, 'eye', 'eye-slash')]]", tooltip="Preview: [[if(preview, 'on', 'off')]]")
 		.content-wrapper
 			#content
 	script(src="script.js")
