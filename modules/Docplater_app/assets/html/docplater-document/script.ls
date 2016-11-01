@@ -13,13 +13,13 @@ Polymer(
 		redux-behavior
 	]
 	properties	:
-		document	:
+		document		:
 			statePath	: 'document'
 			type		: Object
-		hash	: String
-		preview	:
-			statePath	: 'preview'
-			type		: Boolean
+		hash			: String
+		scribe_instance	:
+			notify	: true
+			type	: Object
 	created : !->
 		@attached_once
 			.then ~> cs.Docplater.functions.get_document(@hash)
@@ -54,9 +54,5 @@ Polymer(
 						))
 						..use(scribe-plugin-tab-indent())
 						..setHTML(@document.content)
-		)
-	_toggle_preview : !->
-		@dispatch(
-			type	: 'PREVIEW_TOGGLE'
 		)
 )

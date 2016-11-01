@@ -1,6 +1,7 @@
 dom-module#docplater-app
 	link(rel="import" href="style.css" type="css")
 	template
-		docplater-document(data="{{data}}" hash="43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008")
-		docplater-document-parameters-panel(data="[[data]]")
+		docplate-document-toolbar(scribe_instance="[[scribe_instance]]")
+		docplater-document(scribe_instance="{{scribe_instance}}" hash="43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008")
+		docplater-document-parameters-panel
 	script(src="script.js")

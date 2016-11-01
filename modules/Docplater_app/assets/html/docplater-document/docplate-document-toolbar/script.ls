@@ -8,13 +8,16 @@
 redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is				: 'docplate-document-toolbar'
-	behaviors	: [
+	behaviors		: [
 		redux-behavior
 	]
 	properties		:
 		parameters		:
 			statePath	: 'document.parameters'
 			type		: Object
+		preview			:
+			statePath	: 'preview'
+			type		: Boolean
 		scribe_instance	:
 			observer	: '_scribe_instance'
 			type		: Object
@@ -72,5 +75,9 @@ Polymer(
 			if parameter
 				@ssa.insert_html("<docplater-document-parameter>#parameter</docplater-document-parameter>")
 			modal.close()
+		)
+	_toggle_preview : !->
+		@dispatch(
+			type	: 'PREVIEW_TOGGLE'
 		)
 )

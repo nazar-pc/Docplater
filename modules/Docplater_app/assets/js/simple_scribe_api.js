@@ -152,7 +152,7 @@
       return callback.call(this);
     }
     this._in_transaction = true;
-    scribe.transactionManager.run(function(){
+    this.scribe_instance.transactionManager.run(function(){
       result = callback.call(this);
     });
     this._in_transaction = false;

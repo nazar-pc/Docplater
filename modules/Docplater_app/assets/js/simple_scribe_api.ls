@@ -122,7 +122,7 @@ simple_scribe_api::
 			return callback.call(@)
 		@_in_transaction	= true
 		var result
-		scribe.transactionManager.run(!->
+		@scribe_instance.transactionManager.run(!->
 			result	:= callback.call(@)
 		)
 		@_in_transaction	= false

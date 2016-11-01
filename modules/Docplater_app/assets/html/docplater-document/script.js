@@ -17,9 +17,9 @@
           type: Object
         },
         hash: String,
-        preview: {
-          statePath: 'preview',
-          type: Boolean
+        scribe_instance: {
+          notify: true,
+          type: Object
         }
       },
       created: function(){
@@ -48,11 +48,6 @@
           }));
           x$.use(scribePluginTabIndent());
           x$.setHTML(this$.document.content);
-        });
-      },
-      _toggle_preview: function(){
-        this.dispatch({
-          type: 'PREVIEW_TOGGLE'
         });
       }
     });

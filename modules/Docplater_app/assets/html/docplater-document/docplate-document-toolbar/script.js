@@ -16,6 +16,10 @@
           statePath: 'document.parameters',
           type: Object
         },
+        preview: {
+          statePath: 'preview',
+          type: Boolean
+        },
         scribe_instance: {
           observer: '_scribe_instance',
           type: Object
@@ -86,6 +90,11 @@
             this$.ssa.insert_html("<docplater-document-parameter>" + parameter + "</docplater-document-parameter>");
           }
           modal.close();
+        });
+      },
+      _toggle_preview: function(){
+        this.dispatch({
+          type: 'PREVIEW_TOGGLE'
         });
       }
     });
