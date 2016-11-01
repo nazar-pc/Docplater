@@ -20,6 +20,11 @@
           statePath: 'preview',
           type: Boolean
         },
+        right_panel: {
+          notify: true,
+          type: Boolean,
+          value: true
+        },
         scribe_instance: {
           observer: '_scribe_instance',
           type: Object
@@ -96,6 +101,9 @@
         this.dispatch({
           type: 'PREVIEW_TOGGLE'
         });
+      },
+      _toggle_right_panel: function(){
+        this.right_panel = !this.right_panel;
       }
     });
   });

@@ -13,28 +13,36 @@
 	width      : 100vw;
 }
 
-docplate-document-toolbar {
-	border-bottom : .1rem solid rgba(80, 80, 80, .3);
-	height        : 2.6rem;
-	left          : 0;
-	position      : absolute;
-	right         : 25em;
-	top           : 0;
-}
-
-docplater-document {
+* {
 	bottom   : 0;
 	left     : 0;
 	position : absolute;
-	right    : 25em;
-	top      : 2.6em;
+	right    : 0;
+	top      : 0;
 }
 
-docplater-document-parameters-panel {
-	border-left : .1rem solid rgba(80, 80, 80, .3);
-	bottom      : 0;
-	position    : absolute;
-	right       : 0;
-	top         : 0;
-	width       : 25em;
+docplate-document-toolbar {
+	border-bottom : .1rem solid rgba(80, 80, 80, .3);
+	height        : 2.6rem;
+
+	& ~ * {
+		top : 2.6em;
+	}
+}
+
+.right-panel {
+	left : auto;
+
+	&[show] {
+		border-left : .1rem solid rgba(80, 80, 80, .3);
+		width       : 25em;
+
+		& ~ * {
+			right : 25.1em;
+		}
+	}
+
+	> * {
+		height : 100%;
+	}
 }

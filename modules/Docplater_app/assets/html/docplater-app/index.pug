@@ -1,7 +1,8 @@
 dom-module#docplater-app
 	link(rel="import" href="style.css" type="css")
 	template
-		docplate-document-toolbar(scribe_instance="[[scribe_instance]]")
+		docplate-document-toolbar(scribe_instance="[[scribe_instance]]" right_panel="{{right_panel}}")
+		.right-panel(show$="[[right_panel]]")
+			docplater-document-parameters-panel
 		docplater-document(scribe_instance="{{scribe_instance}}" hash="43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008")
-		docplater-document-parameters-panel
 	script(src="script.js")
