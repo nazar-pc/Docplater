@@ -28,8 +28,12 @@
         scribe_instance: {
           observer: '_scribe_instance',
           type: Object
-        }
+        },
+        zoom: 100,
+        zoom_max: 250,
+        zoom_min: 50
       },
+      observers: ['_update_zoom(scribe_instance, zoom)'],
       _scribe_instance: function(){
         var this$ = this;
         require(['scribe-plugin-toolbar']).then(function(arg$){
@@ -104,6 +108,18 @@
       },
       _toggle_right_panel: function(){
         this.right_panel = !this.right_panel;
+      },
+      _update_zoom: function(scribe_instance, zoom){
+        scribe_instance.el.style.zoom = zoom / 100;
+      },
+      _zoom_minus: function(){
+        this.zoom = this.zoom - 25;
+      },
+      _zoom_reset: function(){
+        this.zoom = 100;
+      },
+      _zoom_plus: function(){
+        this.zoom = this.zoom + 25;
       }
     });
   });

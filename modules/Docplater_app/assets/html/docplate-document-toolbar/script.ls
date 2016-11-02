@@ -25,6 +25,12 @@ Polymer(
 		scribe_instance	:
 			observer	: '_scribe_instance'
 			type		: Object
+		zoom			: 100
+		zoom_max		: 250
+		zoom_min		: 50
+	observers		: [
+		'_update_zoom(scribe_instance, zoom)'
+	]
 	_scribe_instance : !->
 		require(['scribe-plugin-toolbar']).then ([scribe-plugin-toolbar]) !~>
 			@scribe_instance.use(scribe-plugin-toolbar(@$.toolbar))
@@ -86,4 +92,12 @@ Polymer(
 		)
 	_toggle_right_panel : !->
 		@right_panel	= !@right_panel
+	_update_zoom : (scribe_instance, zoom) !->
+		scribe_instance.el.style.zoom	= zoom / 100
+	_zoom_minus : !->
+		@zoom	= @zoom - 25
+	_zoom_reset : !->
+		@zoom	= 100
+	_zoom_plus : !->
+		@zoom	= @zoom + 25
 )
