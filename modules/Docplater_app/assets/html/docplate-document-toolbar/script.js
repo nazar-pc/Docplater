@@ -110,7 +110,7 @@
         this.right_panel = !this.right_panel;
       },
       _update_zoom: function(scribe_instance, zoom){
-        scribe_instance.el.style.zoom = zoom / 100;
+        scribe_instance.el.parentElement.style.zoom = zoom / 100;
       },
       _zoom_minus: function(){
         this.zoom = this.zoom - 25;

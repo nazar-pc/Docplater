@@ -93,7 +93,7 @@ Polymer(
 	_toggle_right_panel : !->
 		@right_panel	= !@right_panel
 	_update_zoom : (scribe_instance, zoom) !->
-		scribe_instance.el.style.zoom	= zoom / 100
+		scribe_instance.el.parentElement.style.zoom	= zoom / 100
 	_zoom_minus : !->
 		@zoom	= @zoom - 25
 	_zoom_reset : !->
