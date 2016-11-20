@@ -30,26 +30,25 @@ Polymer(
 					parameter.merge({name})
 			}
 		]
-		Promise.all(
-			for own clause_hash of document.clauses
-				cs.Docplater.functions.get_clause(clause_hash)
-		).then (clauses) !~>
-			for clause in clauses
-				clause_instances	= document.clauses[clause.hash]
-				for own clause_index, clause_instance of clause_instances
-					if Object.keys(clause_instance.parameters).length
-						parameters_map.push({
-							for			: clause.title + ' #' + clause_index
-							parameters	: for own name, parameter of clause_instance.parameters
-								parameter.merge({name, clause_hash, clause_index})
-						})
-			@parameters_map	= parameters_map
+		for clause in document.clauses
+			if clause.instances.length
+				for parameters, clause_instance in clause.instances
+					parameters_map.push({
+						for			: clause.title + ' #' + clause_instance
+						parameters	: for own name, parameter of parameters
+							parameter.merge({
+								name			: name
+								clause_hash		: clause.hash
+								clause_instance	: clause_instance
+							})
+					})
+		@parameters_map	= parameters_map
 	_parameter_highlight : (e) !->
 		@dispatch(
 			type			: 'PARAMETER_HIGHLIGHT'
 			name			: e.model.parameter.name
 			clause_hash		: e.model.parameter.clause_hash
-			clause_index	: e.model.parameter.clause_index
+			clause_instance	: e.model.parameter.clause_instance
 		)
 	_parameter_unhighlight : !->
 		@dispatch(
@@ -61,7 +60,7 @@ Polymer(
 			type			: 'PARAMETER_UPDATE_VALUE'
 			name			: e.model.parameter.name
 			clause_hash		: e.model.parameter.clause_hash
-			clause_index	: e.model.parameter.clause_index
+			clause_instance	: e.model.parameter.clause_instance
 			value			: e.target.value
 		)
 	_add_parameter : !->
@@ -77,7 +76,7 @@ Polymer(
 				type			: 'PARAMETER_SET_DEFAULT_VALUE'
 				name			: name
 				clause_hash		: e.model.parameter.clause_hash
-				clause_index	: e.model.parameter.clause_index
+				clause_instance	: e.model.parameter.clause_instance
 				default_value	: default_value
 			)
 	_delete_parameter : (e) !->

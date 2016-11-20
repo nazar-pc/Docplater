@@ -56,7 +56,7 @@ cs.{}Docplater.{}functions
 				contenteditable	: 'false'
 				tabindex		: 0
 				hash			: @rx.hash
-				index			: @rx.number
+				instance		: @rx.number
 			'docplater-document-parameter'	:
 				contenteditable	: 'false'
 				tabindex		: 0

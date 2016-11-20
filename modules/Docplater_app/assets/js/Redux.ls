@@ -22,9 +22,12 @@ Redux.behavior	=
 		require(['polymer-redux'])
 	]).then ([store, [polymer-redux]]) ->
 		polymer-redux(store)
-function get_full_parameter_path (state, parameter, clause_hash, clause_index)
+function get_full_parameter_path (state, parameter, clause_hash, clause_instance)
 	if clause_hash
-		['document', 'clauses', clause_hash, clause_index, 'parameters', parameter]
+		for clause, clause_index in state.document.clauses
+			if clause.hash == clause_hash
+				return ['document', 'clauses', clause_index, 'instances', clause_instance, parameter]
+		throw 'No clause in document'
 	else
 		['document', 'parameters', parameter]
 
@@ -40,7 +43,7 @@ function reducer (state = initial_state, action)
 		when 'PARAMETER_HIGHLIGHT'
 			if state.highlighted_parameter
 				state	= state.setIn(state.highlighted_parameter.concat('highlight'), false)
-			highlighted_parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index)
+			highlighted_parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance)
 			state
 				.set('highlighted_parameter', highlighted_parameter)
 				.setIn(highlighted_parameter.concat('highlight'), true)
@@ -54,12 +57,12 @@ function reducer (state = initial_state, action)
 		when 'PARAMETER_ADD'
 			state.setIn(['document', 'parameters', action.name], {value : '', default_value : ''})
 		when 'PARAMETER_SET_DEFAULT_VALUE'
-			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index)
+			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance)
 			state.setIn(parameter.concat('default_value'), action.default_value)
 		when 'PARAMETER_DELETE'
 			state.setIn(['document', 'parameters'], state.document.parameters.without(action.name))
 		when 'PARAMETER_UPDATE_VALUE'
-			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index)
+			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance)
 			state.setIn(parameter.concat('value'), action.value)
 		when 'PREVIEW_TOGGLE'
 			state.merge(

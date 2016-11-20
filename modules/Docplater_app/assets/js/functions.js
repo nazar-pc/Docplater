@@ -70,7 +70,7 @@
         contenteditable: 'false',
         tabindex: 0,
         hash: this.rx.hash,
-        index: this.rx.number
+        instance: this.rx.number
       },
       'docplater-document-parameter': {
         contenteditable: 'false',

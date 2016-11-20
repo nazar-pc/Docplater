@@ -27,9 +27,17 @@
     store = arg$[0], polymerRedux = arg$[1][0];
     return polymerRedux(store);
   });
-  function get_full_parameter_path(state, parameter, clause_hash, clause_index){
+  function get_full_parameter_path(state, parameter, clause_hash, clause_instance){
+    var i$, ref$, len$, clause_index, clause;
     if (clause_hash) {
-      return ['document', 'clauses', clause_hash, clause_index, 'parameters', parameter];
+      for (i$ = 0, len$ = (ref$ = state.document.clauses).length; i$ < len$; ++i$) {
+        clause_index = i$;
+        clause = ref$[i$];
+        if (clause.hash === clause_hash) {
+          return ['document', 'clauses', clause_index, 'instances', clause_instance, parameter];
+        }
+      }
+      throw 'No clause in document';
     } else {
       return ['document', 'parameters', parameter];
     }
@@ -46,7 +54,7 @@
       if (state.highlighted_parameter) {
         state = state.setIn(state.highlighted_parameter.concat('highlight'), false);
       }
-      highlighted_parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
+      highlighted_parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance);
       return state.set('highlighted_parameter', highlighted_parameter).setIn(highlighted_parameter.concat('highlight'), true);
     case 'PARAMETER_UNHIGHLIGHT':
       if (state.highlighted_parameter) {
@@ -61,12 +69,12 @@
         default_value: ''
       });
     case 'PARAMETER_SET_DEFAULT_VALUE':
-      parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
+      parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance);
       return state.setIn(parameter.concat('default_value'), action.default_value);
     case 'PARAMETER_DELETE':
       return state.setIn(['document', 'parameters'], state.document.parameters.without(action.name));
     case 'PARAMETER_UPDATE_VALUE':
-      parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_index);
+      parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance);
       return state.setIn(parameter.concat('value'), action.value);
     case 'PREVIEW_TOGGLE':
       return state.merge({

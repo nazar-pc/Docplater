@@ -40,7 +40,11 @@ Polymer(
 		@name	= @textContent.trim()
 	_parameter : (document_state, clause, name) ->
 		if @clause
-			parameter	= document_state.clauses[@clause.hash][@clause.index].parameters[name]
+			clauses		= document_state.clauses
+			for clause in clauses
+				if clause.hash == @clause.hash
+					parameter	= clause.instances[@clause.instance][name]
+					break
 		else
 			parameter	= document_state.parameters[name]
 		@exists	= Boolean(parameter)
@@ -70,7 +74,7 @@ Polymer(
 			type			: 'PARAMETER_HIGHLIGHT'
 			name			: @name
 			clause_hash		: @clause && @clause.hash
-			clause_index	: @clause && @clause.index
+			clause_instance	: @clause && @clause.instance
 		)
 	_focus_out : !->
 		@dispatch(

@@ -9,6 +9,14 @@
 namespace cs\modules\Docplater_app\api;
 
 class Controller {
+	public static $clause_content = <<<HTML
+<table>
+	<tr><td>By:</td><td><docplater-document-parameter>by</docplater-document-parameter></td></tr>
+	<tr><td>Name:</td><td><docplater-document-parameter>name</docplater-document-parameter></td></tr>
+	<tr><td>Title:</td><td><docplater-document-parameter>title</docplater-document-parameter></td></tr>
+	<tr><td>Date:</td><td><docplater-document-parameter>date</docplater-document-parameter></td></tr>
+</table>
+HTML;
 	public static function documents () {
 		$content = /** @lang HTML */
 			<<<HTML
@@ -44,42 +52,45 @@ class Controller {
 <p><strong><docplater-document-parameter>company_name</docplater-document-parameter> (Company)</strong> <strong><docplater-document-parameter>consultant_name</docplater-document-parameter> (Consultant)</strong></p> 
 <table style="width: 100%">
 	<tr>
-		<td><docplater-document-clause hash="9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c" index="0"></docplater-document-clause></td>
-		<td><docplater-document-clause hash="9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c" index="1"></docplater-document-clause></td>
+		<td><docplater-document-clause hash="9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c" instance="0"></docplater-document-clause></td>
+		<td><docplater-document-clause hash="9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c" instance="1"></docplater-document-clause></td>
 	</tr>
 </table>
 HTML;
 
-		return
-			['content' => $content] +
-			_json_decode(
-			/** @lang JSON */
-				<<<JSON
+		$return                          = _json_decode(
+		/** @lang JSON */
+			<<<JSON
 {
 	"hash"       : "43cc23fa52b87b4cc1d02b5b114154151d6adddb17c9fddc06b027fa99e24008",
+	"title"      : "NDA",
+	"content"    : "",
 	"parameters" : {
-		"company_name" : {
+		"company_name"    : {
 			"value"         : "Evil corporation",
 			"default_value" : ""
 		},
-		"consultant_name"  : {
+		"consultant_name" : {
 			"value"         : "John Galt",
 			"default_value" : ""
 		},
-		"date"         : {
+		"date"            : {
 			"value"         : "42 January 1984",
 			"default_value" : ""
 		}
 	},
-	"clauses"    : {
-		"9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c" : [
-			{
-				"parameters" : {
-					"by" : {
+	"clauses"    : [
+		{
+			"hash"      : "9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c",
+			"title"     : "Demo template",
+			"content"   : "",
+			"instances" : [
+				{
+					"by"    : {
 						"value"         : "@company_name",
 						"default_value" : ""
 					},
-					"name" : {
+					"name"  : {
 						"value"         : "",
 						"default_value" : ""
 					},
@@ -87,19 +98,17 @@ HTML;
 						"value"         : "",
 						"default_value" : ""
 					},
-					"date" : {
+					"date"  : {
 						"value"         : "",
 						"default_value" : "@date"
 					}
-				}
-			},
-			{
-				"parameters" : {
-					"by" : {
+				},
+				{
+					"by"    : {
 						"value"         : "@consultant_name",
 						"default_value" : ""
 					},
-					"name" : {
+					"name"  : {
 						"value"         : "",
 						"default_value" : ""
 					},
@@ -107,34 +116,28 @@ HTML;
 						"value"         : "",
 						"default_value" : ""
 					},
-					"date" : {
+					"date"  : {
 						"value"         : "",
 						"default_value" : "@date"
 					}
 				}
-			}
-		]
-	}
+			]
+		}
+	]
 }
 JSON
-			);
+		);
+		$return['content']               = $content;
+		$return['clauses'][0]['content'] = self::$clause_content;
+		return $return;
 	}
 	public static function clauses () {
-		$content = <<<HTML
-<table>
-	<tr><td>By:</td><td><docplater-document-parameter>by</docplater-document-parameter></td></tr>
-	<tr><td>Name:</td><td><docplater-document-parameter>name</docplater-document-parameter></td></tr>
-	<tr><td>Title:</td><td><docplater-document-parameter>title</docplater-document-parameter></td></tr>
-	<tr><td>Date:</td><td><docplater-document-parameter>date</docplater-document-parameter></td></tr>
-</table>
-HTML;
-
 		return
-			['content' => $content] +
+			['content' => self::$clause_content] +
 			_json_decode(
 			/** @lang JSON */
 				<<<JSON
-{
+	{
 	"hash"       : "9d96e17fd46eb91085fe8e47f714bd58f95300e1a6eb7792fb30d3efdf85446c",
 	"title"      : "Demo template",
 	"parameters" : [

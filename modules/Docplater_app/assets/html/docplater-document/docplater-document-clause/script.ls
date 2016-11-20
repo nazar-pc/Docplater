@@ -5,20 +5,25 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
+redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is				: 'docplater-document-clause'
 	behaviors		: [
 		cs.Docplater.behaviors.attached_once
+		redux-behavior
 	]
 	hostAttributes	:
 		contenteditable	: 'false'
 	properties		:
 		data		: Object
 		hash		: String
-		index		: Number
+		instance	: Number
 	created : !->
 		@attached_once
-			.then ~> cs.Docplater.functions.get_clause(@hash)
+			.then !~>
+				for clause in @getState().document.clauses
+					if clause.hash == @hash
+						return clause
 			.then (@data) !~>
 				@$.content.innerHTML	= @data.content
 )

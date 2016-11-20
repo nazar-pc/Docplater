@@ -20,7 +20,7 @@
       },
       observers: ['_parameters_map(state.document, state.clauses)'],
       _parameters_map: function(document, clauses){
-        var parameters_map, name, parameter, clause_hash, this$ = this;
+        var parameters_map, name, parameter, i$, ref$, len$, clause, j$, ref1$, len1$, clause_instance, parameters;
         if (this._skip_render) {
           this._skip_render = false;
           return;
@@ -38,48 +38,39 @@
             return results$;
           }())
         }];
-        Promise.all((function(){
+        for (i$ = 0, len$ = (ref$ = document.clauses).length; i$ < len$; ++i$) {
+          clause = ref$[i$];
+          if (clause.instances.length) {
+            for (j$ = 0, len1$ = (ref1$ = clause.instances).length; j$ < len1$; ++j$) {
+              clause_instance = j$;
+              parameters = ref1$[j$];
+              parameters_map.push({
+                'for': clause.title + ' #' + clause_instance,
+                parameters: (fn$())
+              });
+            }
+          }
+        }
+        this.parameters_map = parameters_map;
+        function fn$(){
           var ref$, own$ = {}.hasOwnProperty, results$ = [];
-          for (clause_hash in ref$ = document.clauses) if (own$.call(ref$, clause_hash)) {
-            results$.push(cs.Docplater.functions.get_clause(clause_hash));
+          for (name in ref$ = parameters) if (own$.call(ref$, name)) {
+            parameter = ref$[name];
+            results$.push(parameter.merge({
+              name: name,
+              clause_hash: clause.hash,
+              clause_instance: clause_instance
+            }));
           }
           return results$;
-        }())).then(function(clauses){
-          var i$, len$, clause, clause_instances, clause_index, clause_instance, name, parameter, own$ = {}.hasOwnProperty;
-          for (i$ = 0, len$ = clauses.length; i$ < len$; ++i$) {
-            clause = clauses[i$];
-            clause_instances = document.clauses[clause.hash];
-            for (clause_index in clause_instances) if (own$.call(clause_instances, clause_index)) {
-              clause_instance = clause_instances[clause_index];
-              if (Object.keys(clause_instance.parameters).length) {
-                parameters_map.push({
-                  'for': clause.title + ' #' + clause_index,
-                  parameters: (fn$())
-                });
-              }
-            }
-          }
-          this$.parameters_map = parameters_map;
-          function fn$(){
-            var ref$, own$ = {}.hasOwnProperty, results$ = [];
-            for (name in ref$ = clause_instance.parameters) if (own$.call(ref$, name)) {
-              parameter = ref$[name];
-              results$.push(parameter.merge({
-                name: name,
-                clause_hash: clause_hash,
-                clause_index: clause_index
-              }));
-            }
-            return results$;
-          }
-        });
+        }
       },
       _parameter_highlight: function(e){
         this.dispatch({
           type: 'PARAMETER_HIGHLIGHT',
           name: e.model.parameter.name,
           clause_hash: e.model.parameter.clause_hash,
-          clause_index: e.model.parameter.clause_index
+          clause_instance: e.model.parameter.clause_instance
         });
       },
       _parameter_unhighlight: function(){
@@ -93,7 +84,7 @@
           type: 'PARAMETER_UPDATE_VALUE',
           name: e.model.parameter.name,
           clause_hash: e.model.parameter.clause_hash,
-          clause_index: e.model.parameter.clause_index,
+          clause_instance: e.model.parameter.clause_instance,
           value: e.target.value
         });
       },
@@ -114,7 +105,7 @@
             type: 'PARAMETER_SET_DEFAULT_VALUE',
             name: name,
             clause_hash: e.model.parameter.clause_hash,
-            clause_index: e.model.parameter.clause_index,
+            clause_instance: e.model.parameter.clause_instance,
             default_value: default_value
           });
         });
