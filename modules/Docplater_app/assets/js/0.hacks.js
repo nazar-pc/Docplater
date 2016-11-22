@@ -7,6 +7,7 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
+  var ref$;
   document.designMode = "on";
   document.execCommand('enableObjectResizing', false, 'false');
   document.execCommand("enableInlineTableEditing", false, "false");
@@ -16,5 +17,17 @@
       main: 'redux',
       location: '/storage/Composer/vendor/npm-asset/redux/dist'
     }]
+  });
+  ((ref$ = window.process || (window.process = {})).env || (ref$.env = {})).NODE_ENV = '';
+  delete requirejs.contexts._.config.paths['seamless-immutable'];
+  delete requirejs.contexts._.config.pkgs['seamless-immutable'];
+  define('seamless-immutable', ['/storage/Composer/vendor/npm-asset/seamless-immutable/src/seamless-immutable.js'], function(){
+    return window.Immutable;
+  });
+  define('scribe-plugin-inline-styles-to-elements/inline-styles-formatter', ['inline-styles-formatter'], function(it){
+    return it;
+  });
+  define('scribe-plugin-inline-styles-to-elements/as-html-formatter', ['as-html-formatter'], function(it){
+    return it;
   });
 }).call(this);
