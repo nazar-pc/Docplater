@@ -31,7 +31,7 @@ cs.{}Docplater.{}functions
 				)
 				document
 	..rx =
-		hash	: (-> @test(it)).bind(/^[0-9a-f]{64}$/)
+		hash	: (-> @test(it)).bind(/^[0-9a-f]{40}$/)
 		number	: (-> @test(it)).bind(/^[0-9]+$/)
 	..get_list_of_allowed_tags = ->
 		list	= [

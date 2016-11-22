@@ -7,7 +7,6 @@
  * @license   AGPL-3.0, see license.txt
  */
 namespace cs\modules\Docplater_app;
-
 use
 	cs\Config,
 	cs\CRUD_helpers,
@@ -19,6 +18,7 @@ class Document_template {
 	use
 		CRUD_helpers,
 		Singleton;
+
 	protected $data_model = [
 		'hash'        => 'text:40',
 		'group_uuid'  => 'text:36',

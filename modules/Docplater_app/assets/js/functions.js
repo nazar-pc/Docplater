@@ -44,7 +44,7 @@
   x$.rx = {
     hash: function(it){
       return this.test(it);
-    }.bind(/^[0-9a-f]{64}$/),
+    }.bind(/^[0-9a-f]{40}$/),
     number: function(it){
       return this.test(it);
     }.bind(/^[0-9]+$/)
