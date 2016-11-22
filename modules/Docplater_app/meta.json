@@ -1,13 +1,19 @@
 {
 	"package"     : "Docplater_app",
 	"category"    : "modules",
-	"version"     : "0.33.0+build-44",
+	"version"     : "0.34.0+build-45",
 	"description" : "Main Docplater UI",
 	"author"      : "Nazar Mokrynskyi",
 	"license"     : "AGPL-3.0",
 	"assets"      : {
 		"Docplater_app" : "*"
 	},
+	"db"          : [
+		"docplater"
+	],
+	"db_support"  : [
+		"MySQLi"
+	],
 	"provide"     : "docplater_app",
 	"require"     : [
 		"System>=6.25",
