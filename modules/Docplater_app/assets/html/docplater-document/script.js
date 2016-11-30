@@ -25,7 +25,9 @@
       created: function(){
         var this$ = this;
         this.attached_once.then(function(){
-          return cs.Docplater.functions.get_document(this$.hash);
+          if (this$.hash) {
+            cs.Docplater.functions.get_document(this$.hash);
+          }
         }).then(function(){
           this$.scopeSubtree(this$.$.content, true);
           this$._init_scribe();

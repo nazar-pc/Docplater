@@ -22,7 +22,9 @@ Polymer(
 			type	: Object
 	created : !->
 		@attached_once
-			.then ~> cs.Docplater.functions.get_document(@hash)
+			.then !~>
+				if @hash
+					cs.Docplater.functions.get_document(@hash)
 			.then !~>
 				@scopeSubtree(@$.content, true)
 				@_init_scribe()

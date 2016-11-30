@@ -10,8 +10,11 @@
   var Immutable, initial_state, Redux, ref$;
   Immutable = null;
   initial_state = {
-    clauses: {},
-    documents: {},
+    document: {
+      clauses: [],
+      content: '<p></p>',
+      parameters: {}
+    },
     preview: true
   };
   Redux = (ref$ = cs.Docplater || (cs.Docplater = {})).Redux || (ref$.Redux = {});
