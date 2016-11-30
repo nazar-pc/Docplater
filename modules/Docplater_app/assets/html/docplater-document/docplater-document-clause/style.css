@@ -1,1 +1,1 @@
-:host{box-sizing:border-box;display:block}header{background:grey;color:white;height:2em;line-height:2em;margin-top:-2em;opacity:0;width:100%;z-index:-1}:host(:hover)>header,:host(:focus)>header{opacity:1;z-index:auto}#content{outline:1px dashed grey}
+:host{box-sizing:border-box;display:block}header{background:grey;color:white;display:none;height:2em;line-height:2em;margin-top:-2em;opacity:0;width:100%;z-index:-1}:host(:hover)>header,:host(:focus)>header{display:block;opacity:1;z-index:auto}#content{outline:1px dashed grey}
