@@ -18,8 +18,8 @@
           type: Object
         }
       },
-      observers: ['_parameters_map(state.document, state.clauses)'],
-      _parameters_map: function(document, clauses){
+      observers: ['_parameters_map(state.document)'],
+      _parameters_map: function(document){
         var parameters_map, name, parameter, i$, ref$, len$, clause, j$, ref1$, len1$, clause_instance, parameters;
         if (this._skip_render) {
           this._skip_render = false;

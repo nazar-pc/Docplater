@@ -17,9 +17,9 @@ Polymer(
 			statePath	: ''
 			type		: Object
 	observers	: [
-		'_parameters_map(state.document, state.clauses)'
+		'_parameters_map(state.document)'
 	]
-	_parameters_map : (document, clauses) !->
+	_parameters_map : (document) !->
 		if @_skip_render
 			@_skip_render	= false
 			return
