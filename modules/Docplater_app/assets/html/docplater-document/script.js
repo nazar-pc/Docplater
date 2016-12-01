@@ -14,7 +14,8 @@
       properties: {
         document: {
           statePath: 'document',
-          type: Object
+          type: Object,
+          observer: '_document_changed'
         },
         hash: String,
         scribe_instance: {
@@ -33,9 +34,16 @@
           this$._init_scribe();
         });
       },
+      _document_changed: function(){
+        if (this.scribe_instance && this.document.hash !== this.hash) {
+          this.hash = this.document.hash;
+          this.scribe_instance.setContent(this.document.content);
+        }
+      },
       _init_scribe: function(){
         var this$ = this;
         if (this.scribe_instance) {
+          this.scribe_instance.setContent(this.document.content);
           return;
         }
         require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-keyboard-shortcuts', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent']).then(function(arg$){

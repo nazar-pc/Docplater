@@ -16,6 +16,7 @@ Polymer(
 		document		:
 			statePath	: 'document'
 			type		: Object
+			observer	: '_document_changed'
 		hash			: String
 		scribe_instance	:
 			notify	: true
@@ -28,8 +29,13 @@ Polymer(
 			.then !~>
 				@scopeSubtree(@$.content, true)
 				@_init_scribe()
+	_document_changed : !->
+		if @scribe_instance && @document.hash != @hash
+			@hash = @document.hash
+			@scribe_instance.setContent(@document.content)
 	_init_scribe : !->
 		if @scribe_instance
+			@scribe_instance.setContent(@document.content)
 			return
 		require([
 			'scribe-editor'

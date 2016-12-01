@@ -15,8 +15,10 @@ use
 	Ramsey\Uuid\Uuid;
 
 class Document_template {
+	use CRUD_helpers {
+		search as crud_search;
+	}
 	use
-		CRUD_helpers,
 		Singleton;
 
 	protected $data_model = [
@@ -32,7 +34,7 @@ class Document_template {
 	];
 	protected $table      = '[prefix]docplater_documents_templates';
 	protected function cdb () {
-		return Config::instance()->module('System')->db('users');
+		return Config::instance()->module('Docplater_app')->db('docplater');
 	}
 	protected function construct () {
 		$this->data_model['content'] = function ($text) {
@@ -87,6 +89,14 @@ class Document_template {
 	 */
 	public function get ($hash) {
 		return $this->read($hash);
+	}
+	/**
+	 * @param mixed[] $search_parameters
+	 *
+	 * @return false|int|string[]
+	 */
+	public function search ($search_parameters = []) {
+		return $this->crud_search($search_parameters);
 	}
 	/**
 	 * Delete document template by its hash
