@@ -27,7 +27,12 @@
         var this$ = this;
         this.attached_once.then(function(){
           if (this$.hash) {
-            cs.Docplater.functions.get_document(this$.hash);
+            cs.api('get api/Docplater_app/documents/' + this$.hash).then(function(document){
+              return this.dispatch({
+                type: 'DOCUMENT_LOADED',
+                document: document
+              });
+            });
           }
         }).then(function(){
           this$.scopeSubtree(this$.$.content, true);
@@ -37,13 +42,13 @@
       _document_changed: function(){
         if (this.scribe_instance && this.document.hash !== this.hash) {
           this.hash = this.document.hash;
-          this.scribe_instance.setContent(this.document.content);
+          this._set_content(this.document.content);
         }
       },
       _init_scribe: function(){
         var this$ = this;
         if (this.scribe_instance) {
-          this.scribe_instance.setContent(this.document.content);
+          this._set_content(this.document.content);
           return;
         }
         require(['scribe-editor', 'scribe-plugin-inline-styles-to-elements', 'scribe-plugin-keyboard-shortcuts', 'scribe-plugin-sanitizer', 'scribe-plugin-tab-indent']).then(function(arg$){
@@ -57,8 +62,14 @@
             tags: cs.Docplater.functions.fill_tags_attributes(cs.Docplater.functions.get_list_of_allowed_tags())
           }));
           x$.use(scribePluginTabIndent());
-          x$.setHTML(this$.document.content);
+          this$._set_content(this$.document.content);
         });
+      },
+      _set_content: function(content){
+        var x$;
+        x$ = this.scribe_instance;
+        x$.setContent(content);
+        x$.undoManager.clearUndo();
       }
     });
   });

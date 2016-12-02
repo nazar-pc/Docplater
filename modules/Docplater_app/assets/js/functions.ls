@@ -7,14 +7,6 @@
  */
 loading_clauses	= {}
 cs.{}Docplater.{}functions
-	..get_document = (document_hash) ->
-		cs.Docplater.Redux.store.then (store) ->
-			cs.api("get api/Docplater_app/documents/#document_hash").then (document) ->
-				store.dispatch(
-					type		: 'DOCUMENT_LOADED'
-					document	: document
-				)
-				document
 	..rx =
 		hash	: (-> @test(it)).bind(/^[0-9a-f]{40}$/)
 		number	: (-> @test(it)).bind(/^[0-9]+$/)

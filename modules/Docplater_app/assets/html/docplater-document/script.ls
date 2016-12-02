@@ -25,17 +25,21 @@ Polymer(
 		@attached_once
 			.then !~>
 				if @hash
-					cs.Docplater.functions.get_document(@hash)
+					cs.api('get api/Docplater_app/documents/' + @hash).then (document) ->
+						@dispatch(
+							type		: 'DOCUMENT_LOADED'
+							document	: document
+						)
 			.then !~>
 				@scopeSubtree(@$.content, true)
 				@_init_scribe()
 	_document_changed : !->
 		if @scribe_instance && @document.hash != @hash
 			@hash = @document.hash
-			@scribe_instance.setContent(@document.content)
+			@_set_content(@document.content)
 	_init_scribe : !->
 		if @scribe_instance
-			@scribe_instance.setContent(@document.content)
+			@_set_content(@document.content)
 			return
 		require([
 			'scribe-editor'
@@ -51,16 +55,20 @@ Polymer(
 				scribe-plugin-sanitizer
 				scribe-plugin-tab-indent
 			]) !~>
-					@scribe_instance	= new scribe-editor(@$.content)
-					@scribe_instance
-						..use(scribe-plugin-inline-styles-to-elements())
-						..use(scribe-plugin-keyboard-shortcuts())
-						..use(scribe-plugin-sanitizer(
-							tags: cs.Docplater.functions.fill_tags_attributes(
-								cs.Docplater.functions.get_list_of_allowed_tags()
-							)
-						))
-						..use(scribe-plugin-tab-indent())
-						..setHTML(@document.content)
+				@scribe_instance	= new scribe-editor(@$.content)
+				@scribe_instance
+					..use(scribe-plugin-inline-styles-to-elements())
+					..use(scribe-plugin-keyboard-shortcuts())
+					..use(scribe-plugin-sanitizer(
+						tags: cs.Docplater.functions.fill_tags_attributes(
+							cs.Docplater.functions.get_list_of_allowed_tags()
+						)
+					))
+					..use(scribe-plugin-tab-indent())
+				@_set_content(@document.content)
 		)
+	_set_content : (content) !->
+		@scribe_instance
+			..setContent(content)
+			..undoManager.clearUndo()
 )

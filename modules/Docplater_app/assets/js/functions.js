@@ -10,17 +10,6 @@
   var loading_clauses, x$, ref$;
   loading_clauses = {};
   x$ = (ref$ = cs.Docplater || (cs.Docplater = {})).functions || (ref$.functions = {});
-  x$.get_document = function(document_hash){
-    return cs.Docplater.Redux.store.then(function(store){
-      return cs.api("get api/Docplater_app/documents/" + document_hash).then(function(document){
-        store.dispatch({
-          type: 'DOCUMENT_LOADED',
-          document: document
-        });
-        return document;
-      });
-    });
-  };
   x$.rx = {
     hash: function(it){
       return this.test(it);

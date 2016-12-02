@@ -23,7 +23,10 @@
         });
       },
       _load_document: function(e){
-        cs.Docplater.functions.get_document(e.model.item.hash);
+        this.dispatch({
+          type: 'DOCUMENT_LOADED',
+          document: e.model.item
+        });
       }
     });
   });

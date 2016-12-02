@@ -19,5 +19,8 @@ Polymer(
 			.then -> cs.api('get api/Docplater_app/documents')
 			.then (@documents) !~>
 	_load_document : (e) !->
-		cs.Docplater.functions.get_document(e.model.item.hash)
+		@dispatch(
+			type		: 'DOCUMENT_LOADED'
+			document	: e.model.item
+		)
 )
