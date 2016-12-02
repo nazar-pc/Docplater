@@ -31,11 +31,10 @@
     return polymerRedux(store);
   });
   function get_full_parameter_path(state, parameter, clause_hash, clause_instance){
-    var i$, ref$, len$, clause_index, clause;
+    var clause_index, ref$, clause;
     if (clause_hash) {
-      for (i$ = 0, len$ = (ref$ = state.document.clauses).length; i$ < len$; ++i$) {
-        clause_index = i$;
-        clause = ref$[i$];
+      for (clause_index in ref$ = state.document.clauses) {
+        clause = ref$[clause_index];
         if (clause.hash === clause_hash) {
           return ['document', 'clauses', clause_index, 'instances', clause_instance, parameter];
         }
@@ -46,13 +45,34 @@
     }
   }
   function reducer(state, action){
-    var highlighted_parameter, parameter;
+    var parameters, i$, ref$, len$, parameter, clause_index, clause, highlighted_parameter;
     state == null && (state = initial_state);
     switch (action.type) {
     case 'DOCUMENT_LOADED':
       return state.set('document', action.document);
-    case 'CLAUSE_LOADED':
-      return state.setIn(['clauses', action.clause.hash], action.clause);
+    case 'CLAUSE_ADD_INSTANCE':
+      parameters = {};
+      for (i$ = 0, len$ = (ref$ = action.clause.parameters).length; i$ < len$; ++i$) {
+        parameter = ref$[i$];
+        parameters[parameter] = {
+          value: '',
+          default_value: ''
+        };
+      }
+      for (clause_index in ref$ = state.document.clauses) {
+        clause = ref$[clause_index];
+        if (clause.hash === action.clause.hash) {
+          return state.setIn(['document', 'clauses', clause_index, 'instances', parseInt(Object.keys(clause.instances).pop()) + 1], parameters);
+        }
+      }
+      return state.setIn(['document', 'clauses', state.document.clauses.length], {
+        hash: action.clause.hash,
+        title: action.clause.title,
+        content: action.clause.content,
+        instances: {
+          0: parameters
+        }
+      });
     case 'PARAMETER_HIGHLIGHT':
       if (state.highlighted_parameter) {
         state = state.setIn(state.highlighted_parameter.concat('highlight'), false);

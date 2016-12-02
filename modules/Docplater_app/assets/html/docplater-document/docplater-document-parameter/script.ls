@@ -41,7 +41,7 @@ Polymer(
 	_parameter : (document_state, clause, name) ->
 		if @clause
 			clauses		= document_state.clauses
-			for clause in clauses
+			for clause, clause of clauses
 				if clause.hash == @clause.hash
 					parameter	= clause.instances[@clause.instance][name]
 					break

@@ -9,7 +9,7 @@
 (function(){
   cs.Docplater.Redux.behavior.then(function(reduxBehavior){
     Polymer({
-      is: 'docplate-document-toolbar',
+      is: 'docplater-document-toolbar',
       behaviors: [reduxBehavior],
       properties: {
         parameters: {

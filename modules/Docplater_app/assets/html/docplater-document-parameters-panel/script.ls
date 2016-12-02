@@ -8,7 +8,7 @@
 redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is			: 'docplater-document-parameters-panel'
-	behaviors	:[
+	behaviors	: [
 		redux-behavior
 	]
 	properties	:
@@ -30,18 +30,17 @@ Polymer(
 					parameter.merge({name})
 			}
 		]
-		for clause in document.clauses
-			if clause.instances.length
-				for parameters, clause_instance in clause.instances
-					parameters_map.push({
-						for			: clause.title + ' #' + clause_instance
-						parameters	: for own name, parameter of parameters
-							parameter.merge({
-								name			: name
-								clause_hash		: clause.hash
-								clause_instance	: clause_instance
-							})
-					})
+		for clause, clause of document.clauses
+			for clause_instance, parameters of clause.instances
+				parameters_map.push({
+					for			: clause.title + ' #' + clause_instance
+					parameters	: for own name, parameter of parameters
+						parameter.merge({
+							name			: name
+							clause_hash		: clause.hash
+							clause_instance	: clause_instance
+						})
+				})
 		@parameters_map	= parameters_map
 	_parameter_highlight : (e) !->
 		@dispatch(

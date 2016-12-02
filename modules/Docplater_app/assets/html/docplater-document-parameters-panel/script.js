@@ -20,7 +20,7 @@
       },
       observers: ['_parameters_map(state.document)'],
       _parameters_map: function(document){
-        var parameters_map, name, parameter, i$, ref$, len$, clause, j$, ref1$, len1$, clause_instance, parameters;
+        var parameters_map, name, parameter, clause, ref$, clause_instance, ref1$, parameters;
         if (this._skip_render) {
           this._skip_render = false;
           return;
@@ -38,17 +38,14 @@
             return results$;
           }())
         }];
-        for (i$ = 0, len$ = (ref$ = document.clauses).length; i$ < len$; ++i$) {
-          clause = ref$[i$];
-          if (clause.instances.length) {
-            for (j$ = 0, len1$ = (ref1$ = clause.instances).length; j$ < len1$; ++j$) {
-              clause_instance = j$;
-              parameters = ref1$[j$];
-              parameters_map.push({
-                'for': clause.title + ' #' + clause_instance,
-                parameters: (fn$())
-              });
-            }
+        for (clause in ref$ = document.clauses) {
+          clause = ref$[clause];
+          for (clause_instance in ref1$ = clause.instances) {
+            parameters = ref1$[clause_instance];
+            parameters_map.push({
+              'for': clause.title + ' #' + clause_instance,
+              parameters: (fn$())
+            });
           }
         }
         this.parameters_map = parameters_map;

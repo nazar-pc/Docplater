@@ -10,26 +10,6 @@
   var loading_clauses, x$, ref$;
   loading_clauses = {};
   x$ = (ref$ = cs.Docplater || (cs.Docplater = {})).functions || (ref$.functions = {});
-  x$.get_clause = function(clause_hash){
-    return cs.Docplater.Redux.store.then(function(store){
-      var state;
-      state = store.getState();
-      if (state.clauses[clause_hash]) {
-        return state.clauses[clause_hash];
-      } else if (loading_clauses[clause_hash]) {
-        return loading_clauses[clause_hash];
-      } else {
-        return loading_clauses[clause_hash] = cs.api("get api/Docplater_app/clauses/" + clause_hash).then(function(clause){
-          delete loading_clauses[clause_hash];
-          store.dispatch({
-            type: 'CLAUSE_LOADED',
-            clause: clause
-          });
-          return clause;
-        });
-      }
-    });
-  };
   x$.get_document = function(document_hash){
     return cs.Docplater.Redux.store.then(function(store){
       return cs.api("get api/Docplater_app/documents/" + document_hash).then(function(document){

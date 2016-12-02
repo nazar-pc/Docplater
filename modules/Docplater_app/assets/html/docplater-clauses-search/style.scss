@@ -1,0 +1,22 @@
+/**
+ * @package   Docplater app
+ * @category  modules
+ * @author    Nazar Mokrynskyi <nazar@mokrynskyi.com>
+ * @copyright Copyright (c) 2016, Nazar Mokrynskyi
+ * @license   AGPL-3.0, see license.txt
+ */
+:host {
+	box-sizing : border-box;
+	display    : block;
+}
+
+.item {
+	cursor  : pointer;
+	padding : 1em;
+
+	@apply --cs-no-selection;
+
+	&:hover {
+		background-color : rgba(0, 0, 0, .1);
+	}
+}

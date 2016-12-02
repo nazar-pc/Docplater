@@ -47,11 +47,11 @@
         this.name = this.textContent.trim();
       },
       _parameter: function(document_state, clause, name){
-        var clauses, i$, len$, parameter, effective_value, upstream_parameter, display_value, highlight;
+        var clause, clauses, parameter, effective_value, upstream_parameter, display_value, highlight;
         if (this.clause) {
           clauses = document_state.clauses;
-          for (i$ = 0, len$ = clauses.length; i$ < len$; ++i$) {
-            clause = clauses[i$];
+          for (clause in clauses) {
+            clause = clauses[clause];
             if (clause.hash === this.clause.hash) {
               parameter = clause.instances[this.clause.instance][name];
               break;

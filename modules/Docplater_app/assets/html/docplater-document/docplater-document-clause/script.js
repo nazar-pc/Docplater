@@ -22,9 +22,9 @@
       created: function(){
         var this$ = this;
         this.attached_once.then(function(){
-          var i$, ref$, len$, clause;
-          for (i$ = 0, len$ = (ref$ = this$.getState().document.clauses).length; i$ < len$; ++i$) {
-            clause = ref$[i$];
+          var clause, ref$;
+          for (clause in ref$ = this$.getState().document.clauses) {
+            clause = ref$[clause];
             if (clause.hash === this$.hash) {
               return clause;
             }

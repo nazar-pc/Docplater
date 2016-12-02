@@ -23,15 +23,31 @@ class Controller {
 		$id       = $Request->route_path(1);
 		$Document = Document::instance();
 		if ($id) {
-			return $Document->get($id);
+			return static::objectize_clauses_instances($Document->get($id));
 		}
-		return $Document->get(
-			$Document->search(
-				[
-					'user' => User::instance()->id
-				]
+		return static::objectize_clauses_instances(
+			$Document->get(
+				$Document->search(
+					[
+						'user' => User::instance()->id
+					]
+				)
 			)
 		);
+	}
+	/**
+	 * @param array[] $document
+	 *
+	 * @return array[]
+	 */
+	protected static function objectize_clauses_instances ($document) {
+		if (is_array_indexed($document)) {
+			return array_map([static::class, 'objectize_clauses_instances'], $document);
+		}
+		foreach ($document['clauses'] as &$clause) {
+			$clause['instances'] = (object)$clause['instances'];
+		}
+		return $document;
 	}
 	/**
 	 * @param \cs\Request $Request
@@ -42,10 +58,12 @@ class Controller {
 		$id                = $Request->route_path(1);
 		$Document_template = Document_template::instance();
 		if ($id) {
-			return $Document_template->get($id);
+			return static::objectize_clauses_instances($Document_template->get($id));
 		}
-		return $Document_template->get(
-			$Document_template->search()
+		return static::objectize_clauses_instances(
+			$Document_template->get(
+				$Document_template->search()
+			)
 		);
 	}
 	/**

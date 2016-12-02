@@ -57,9 +57,15 @@ class Document {
 	public function add ($group_uuid, $parent_hash, $title, $content, $parameters, $clauses) {
 		$group_uuid = Uuid::isValid($group_uuid) ? $group_uuid : Uuid::uuid4();
 		// TODO: Additional validation
-		$date = time();
-		$user = User::instance()->id;
-		$hash = $this->compute_hash($date, $user, $title, $content, $parameters, $clauses);
+		$date    = time();
+		$user    = User::instance()->id;
+		$clauses = array_map(
+			function ($clause) {
+				return ['instances' => (object)$clause['instances']] + $clause;
+			},
+			$clauses
+		);
+		$hash    = $this->compute_hash($date, $user, $title, $content, $parameters, $clauses);
 		return $this->create($hash, $group_uuid, $parent_hash, $date, $user, $title, $content, $parameters, $clauses);
 	}
 	/**

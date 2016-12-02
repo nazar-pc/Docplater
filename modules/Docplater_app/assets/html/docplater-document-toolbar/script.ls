@@ -7,7 +7,7 @@
  */
 redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
-	is				: 'docplate-document-toolbar'
+	is				: 'docplater-document-toolbar'
 	behaviors		: [
 		redux-behavior
 	]

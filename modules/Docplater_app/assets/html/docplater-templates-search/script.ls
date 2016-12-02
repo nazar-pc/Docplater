@@ -8,7 +8,7 @@
 redux-behavior <-! cs.Docplater.Redux.behavior.then
 Polymer(
 	is			: 'docplater-templates-search'
-	behaviors	:[
+	behaviors	: [
 		cs.Docplater.behaviors.attached_once
 		redux-behavior
 	]

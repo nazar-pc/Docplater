@@ -26,7 +26,7 @@ Redux.behavior	=
 		polymer-redux(store)
 function get_full_parameter_path (state, parameter, clause_hash, clause_instance)
 	if clause_hash
-		for clause, clause_index in state.document.clauses
+		for clause_index, clause of state.document.clauses
 			if clause.hash == clause_hash
 				return ['document', 'clauses', clause_index, 'instances', clause_instance, parameter]
 		throw 'No clause in document'
@@ -37,10 +37,27 @@ function reducer (state = initial_state, action)
 	switch action.type
 		when 'DOCUMENT_LOADED'
 			state.set('document', action.document)
-		when 'CLAUSE_LOADED'
+		when 'CLAUSE_ADD_INSTANCE'
+			parameters	= {}
+			for parameter in action.clause.parameters
+				parameters[parameter] =
+					value			: ''
+					default_value	: ''
+			for clause_index, clause of state.document.clauses
+				if clause.hash == action.clause.hash
+					return state.setIn(
+						['document', 'clauses', clause_index, 'instances', parseInt(Object.keys(clause.instances).pop()) + 1]
+						parameters
+					)
 			state.setIn(
-				['clauses', action.clause.hash]
-				action.clause
+				['document', 'clauses', state.document.clauses.length]
+				{
+					hash		: action.clause.hash
+					title		: action.clause.title
+					content		: action.clause.content
+					instances	:
+						0	: parameters
+				}
 			)
 		when 'PARAMETER_HIGHLIGHT'
 			if state.highlighted_parameter

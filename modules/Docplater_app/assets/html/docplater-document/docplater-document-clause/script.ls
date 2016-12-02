@@ -21,7 +21,7 @@ Polymer(
 	created : !->
 		@attached_once
 			.then !~>
-				for clause in @getState().document.clauses
+				for clause, clause of @getState().document.clauses
 					if clause.hash == @hash
 						return clause
 			.then (@data) !~>
