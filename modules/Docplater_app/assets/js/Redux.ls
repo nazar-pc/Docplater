@@ -35,6 +35,8 @@ function get_full_parameter_path (state, parameter, clause_hash, clause_instance
 
 function reducer (state = initial_state, action)
 	switch action.type
+		when 'DOCUMENT_NEW'
+			state.set('document', initial_state.document)
 		when 'DOCUMENT_LOADED'
 			state.set('document', action.document)
 		when 'CLAUSE_ADD_INSTANCE'

@@ -55,6 +55,10 @@ Polymer(
 		)
 		for element in @shadowRoot.querySelectorAll('[heading-tag]')
 			element.disabled	= !heading_allowed
+	_new_document : !->
+		@dispatch(
+			type	: 'DOCUMENT_NEW'
+		)
 	_inline_tag_toggle : (e) !->
 		@ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'))
 	_heading_tag_toggle : (e) !->

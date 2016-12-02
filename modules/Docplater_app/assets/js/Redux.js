@@ -48,6 +48,8 @@
     var parameters, i$, ref$, len$, parameter, clause_index, clause, highlighted_parameter;
     state == null && (state = initial_state);
     switch (action.type) {
+    case 'DOCUMENT_NEW':
+      return state.set('document', initial_state.document);
     case 'DOCUMENT_LOADED':
       return state.set('document', action.document);
     case 'CLAUSE_ADD_INSTANCE':

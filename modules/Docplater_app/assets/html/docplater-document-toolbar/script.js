@@ -67,6 +67,11 @@
           element.disabled = !heading_allowed;
         }
       },
+      _new_document: function(){
+        this.dispatch({
+          type: 'DOCUMENT_NEW'
+        });
+      },
       _inline_tag_toggle: function(e){
         this.ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'));
       },
