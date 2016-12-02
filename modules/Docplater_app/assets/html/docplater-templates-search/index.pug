@@ -2,7 +2,7 @@ dom-module#docplater-templates-search
 	link(rel="import" href="style.css" type="css")
 	template
 		template(is="dom-repeat" items="[[templates]]")
-			.item(on-click="_load_document")
+			.item(on-tap="_load_document")
 				cs-icon(icon="file-text")
 				= ' '
 				| [[item.title]]

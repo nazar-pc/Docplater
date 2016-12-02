@@ -17,6 +17,7 @@ CREATE TABLE `[prefix]docplater_documents` (
   `user` int(10) UNSIGNED NOT NULL,
   `title` varchar(1024) NOT NULL,
   `content` text NOT NULL,
+  `content_hash` char(40) NOT NULL COMMENT 'SHA-1(content)',
   `parameters` text NOT NULL,
   `clauses` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -29,6 +30,7 @@ CREATE TABLE `[prefix]docplater_documents_templates` (
   `user` int(10) UNSIGNED NOT NULL,
   `title` varchar(1024) NOT NULL,
   `content` text NOT NULL,
+  `content_hash` char(40) NOT NULL COMMENT 'SHA-1(content)',
   `parameters` text NOT NULL,
   `clauses` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -45,11 +47,13 @@ ALTER TABLE `[prefix]docplater_documents`
   ADD KEY `group_uuid` (`group_uuid`),
   ADD KEY `parent_hash` (`parent_hash`),
   ADD KEY `date` (`date`),
-  ADD KEY `user` (`user`);
+  ADD KEY `user` (`user`),
+  ADD KEY `content_hash` (`content_hash`);
 
 ALTER TABLE `[prefix]docplater_documents_templates`
   ADD PRIMARY KEY (`hash`),
   ADD KEY `group_uuid` (`group_uuid`),
   ADD KEY `parent_hash` (`parent_hash`),
   ADD KEY `date` (`date`),
-  ADD KEY `user` (`user`);
+  ADD KEY `user` (`user`),
+  ADD KEY `content_hash` (`content_hash`);

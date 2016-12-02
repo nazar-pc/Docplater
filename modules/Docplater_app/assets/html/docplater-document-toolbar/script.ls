@@ -59,6 +59,14 @@ Polymer(
 		@dispatch(
 			type	: 'DOCUMENT_NEW'
 		)
+	_save_new_document : !->
+		# TODO
+	_save_new_document_revision : !->
+		# TODO
+	_save_new_document_template : !->
+		# TODO
+	_save_new_document_template_revision : !->
+		# TODO
 	_inline_tag_toggle : (e) !->
 		@ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'))
 	_heading_tag_toggle : (e) !->

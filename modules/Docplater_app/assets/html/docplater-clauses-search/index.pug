@@ -2,7 +2,7 @@ dom-module#docplater-clauses-search
 	link(rel="import" href="style.css" type="css")
 	template
 		template(is="dom-repeat" items="[[clauses]]")
-			.item(on-click="_insert_clause")
+			.item(on-tap="_insert_clause")
 				cs-icon(icon="puzzle-piece")
 				= ' '
 				| [[item.title]]

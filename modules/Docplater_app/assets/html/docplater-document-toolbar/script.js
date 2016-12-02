@@ -72,6 +72,10 @@
           type: 'DOCUMENT_NEW'
         });
       },
+      _save_new_document: function(){},
+      _save_new_document_revision: function(){},
+      _save_new_document_template: function(){},
+      _save_new_document_template_revision: function(){},
       _inline_tag_toggle: function(e){
         this.ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'));
       },

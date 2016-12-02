@@ -22,15 +22,16 @@ class Document {
 		Singleton;
 
 	protected $data_model = [
-		'hash'        => 'text:40',
-		'group_uuid'  => 'text:36',
-		'parent_hash' => 'text:40',
-		'date'        => 'int:1',
-		'user'        => 'int:1',
-		'title'       => 'text:256',
-		'content'     => null, // Set in constructor
-		'parameters'  => 'json',
-		'clauses'     => 'json'
+		'hash'         => 'text:40',
+		'group_uuid'   => 'text:36',
+		'parent_hash'  => 'text:40',
+		'date'         => 'int:1',
+		'user'         => 'int:1',
+		'title'        => 'text:256',
+		'content'      => null, // Set in constructor
+		'content_hash' => 'text:40',
+		'parameters'   => 'json',
+		'clauses'      => 'json'
 	];
 	protected $table      = '[prefix]docplater_documents';
 	protected function cdb () {
@@ -57,16 +58,13 @@ class Document {
 	public function add ($group_uuid, $parent_hash, $title, $content, $parameters, $clauses) {
 		$group_uuid = Uuid::isValid($group_uuid) ? $group_uuid : Uuid::uuid4();
 		// TODO: Additional validation
-		$date    = time();
-		$user    = User::instance()->id;
-		$clauses = array_map(
-			function ($clause) {
-				return ['instances' => (object)$clause['instances']] + $clause;
-			},
-			$clauses
-		);
-		$hash    = $this->compute_hash($date, $user, $title, $content, $parameters, $clauses);
-		return $this->create($hash, $group_uuid, $parent_hash, $date, $user, $title, $content, $parameters, $clauses);
+		foreach ($clauses as &$clause) {
+			$clause['instances'] = (object)$clause['instances'];
+		}
+		$date = time();
+		$user = User::instance()->id;
+		$hash = $this->compute_hash($date, $user, $title, $content, $parameters, $clauses);
+		return $this->create($hash, $group_uuid, $parent_hash, $date, $user, $title, $content, sha1($content), $parameters, $clauses);
 	}
 	/**
 	 * Compute document hash
