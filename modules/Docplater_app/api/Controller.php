@@ -41,6 +41,9 @@ class Controller {
 	 * @return array[]
 	 */
 	protected static function objectize_clauses_instances ($document) {
+		if (!$document) {
+			return $document;
+		}
 		if (is_array_indexed($document)) {
 			return array_map([static::class, 'objectize_clauses_instances'], $document);
 		}
