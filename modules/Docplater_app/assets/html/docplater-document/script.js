@@ -28,7 +28,7 @@
         this.attached_once.then(function(){
           if (this$.hash) {
             cs.api('get api/Docplater_app/documents/' + this$.hash).then(function(document){
-              return this.dispatch({
+              this$.dispatch({
                 type: 'DOCUMENT_LOADED',
                 document: document
               });

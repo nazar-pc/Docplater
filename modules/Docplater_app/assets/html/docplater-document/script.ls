@@ -25,7 +25,7 @@ Polymer(
 		@attached_once
 			.then !~>
 				if @hash
-					cs.api('get api/Docplater_app/documents/' + @hash).then (document) ->
+					cs.api('get api/Docplater_app/documents/' + @hash).then (document) !~>
 						@dispatch(
 							type		: 'DOCUMENT_LOADED'
 							document	: document

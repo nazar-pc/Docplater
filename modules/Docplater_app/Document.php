@@ -53,7 +53,7 @@ class Document {
 	 * @param array  $parameters
 	 * @param array  $clauses
 	 *
-	 * @return string Document hash
+	 * @return false|string Document hash
 	 */
 	public function add ($group_uuid, $parent_hash, $title, $content, $parameters, $clauses) {
 		$group_uuid = Uuid::isValid($group_uuid) ? $group_uuid : Uuid::uuid4();

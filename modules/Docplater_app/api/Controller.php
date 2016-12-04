@@ -8,6 +8,7 @@
  */
 namespace cs\modules\Docplater_app\api;
 use
+	cs\ExitException,
 	cs\User,
 	cs\modules\Docplater_app\Clause_template,
 	cs\modules\Docplater_app\Document,
@@ -34,6 +35,33 @@ class Controller {
 				)
 			)
 		);
+	}
+	/**
+	 * @param \cs\Request  $Request
+	 * @param \cs\Response $Response
+	 *
+	 * @return string
+	 *
+	 * @throws \cs\ExitException
+	 */
+	public static function documents_post ($Request, $Response) {
+		$data = $Request->data('title', 'content', 'parameters', 'clauses');
+		if (!$data) {
+			throw new ExitException(400);
+		}
+		$hash = Document::instance()->add(
+			@$Request->data['group_uuid'] ?: [],
+			@$Request->data['parent_hash'] ?: [],
+			$data['title'],
+			$data['content'],
+			$data['parameters'],
+			$data['clauses']
+		);
+		if (!$hash) {
+			throw new ExitException(500);
+		}
+		$Response->code = 201;
+		return $hash;
 	}
 	/**
 	 * @param array[] $document

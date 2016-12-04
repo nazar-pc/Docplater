@@ -50,7 +50,7 @@ class Clause_template {
 	 * @param string $content
 	 * @param array  $parameters
 	 *
-	 * @return string Document hash
+	 * @return false|string Clause hash
 	 */
 	public function add ($group_uuid, $parent_hash, $title, $content, $parameters) {
 		$group_uuid = Uuid::isValid($group_uuid) ? $group_uuid : Uuid::uuid4();

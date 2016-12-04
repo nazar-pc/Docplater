@@ -72,8 +72,31 @@
           type: 'DOCUMENT_NEW'
         });
       },
-      _save_new_document: function(){},
-      _save_new_document_revision: function(){},
+      _save_new_document: function(){
+        var document, prompt, this$ = this;
+        document = this.getState().document;
+        prompt = cs.ui.prompt('New document name?', function(title){
+          this$._save_document_internal(document.set('title', title).set('group_uuid', '').set('parent_hash', document.hash));
+        });
+        prompt.input.placeholder = document.title;
+      },
+      _save_document_internal: function(document){
+        var this$ = this;
+        cs.api('post api/Docplater_app/documents', document).then(function(hash){
+          cs.ui.simple_modal('Saved successfully!');
+          return cs.api('get api/Docplater_app/documents/' + hash);
+        }).then(function(document){
+          this$.dispatch({
+            type: 'DOCUMENT_LOADED',
+            document: document
+          });
+        });
+      },
+      _save_new_document_revision: function(){
+        var document;
+        document = this.getState().document;
+        this._save_document_internal(document.set('parent_hash', document.hash));
+      },
       _save_new_document_template: function(){},
       _save_new_document_template_revision: function(){},
       _inline_tag_toggle: function(e){

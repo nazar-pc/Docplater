@@ -60,9 +60,35 @@ Polymer(
 			type	: 'DOCUMENT_NEW'
 		)
 	_save_new_document : !->
-		# TODO
+		document	= @getState().document
+		prompt		= cs.ui.prompt(
+			'New document name?'
+			(title) !~>
+				@_save_document_internal(
+					document
+						.set('title', title)
+						.set('group_uuid', '')
+						.set('parent_hash', document.hash)
+				)
+		)
+		prompt.input.placeholder	= document.title
+	_save_document_internal : (document) !->
+		cs.api('post api/Docplater_app/documents', document)
+			.then (hash) ->
+				cs.ui.simple_modal('Saved successfully!')
+				cs.api('get api/Docplater_app/documents/' + hash)
+			.then (document) !~>
+				@dispatch(
+					type		: 'DOCUMENT_LOADED'
+					document	: document
+				)
 	_save_new_document_revision : !->
-		# TODO
+		document	= @getState().document
+		# TODO: check if there is title already and if it was created from template; probably, just disable/hide button for such cases
+		@_save_document_internal(
+			document
+				.set('parent_hash', document.hash)
+		)
 	_save_new_document_template : !->
 		# TODO
 	_save_new_document_template_revision : !->
