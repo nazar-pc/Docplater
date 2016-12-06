@@ -24,17 +24,56 @@ class Controller {
 		$id       = $Request->route_path(1);
 		$Document = Document::instance();
 		if ($id) {
-			return static::objectize_clauses_instances($Document->get($id));
+			return static::prepare_type(
+				static::objectize_clauses_instances($Document->get($id)),
+				'document'
+			);
 		}
-		return static::objectize_clauses_instances(
-			$Document->get(
-				$Document->search(
-					[
-						'user' => User::instance()->id
-					]
+		return static::prepare_type(
+			static::objectize_clauses_instances(
+				$Document->get(
+					$Document->search(
+						[
+							'user' => User::instance()->id
+						]
+					)
 				)
-			)
+			),
+			'document'
 		);
+	}
+	/**
+	 * @param array[] $item
+	 * @param string  $type
+	 *
+	 * @return array[]
+	 */
+	protected static function prepare_type ($item, $type) {
+		if (is_array_indexed($item)) {
+			foreach ($item as &$i) {
+				$i['type'] = $type;
+			}
+		} else {
+			$item['type'] = $type;
+		}
+		return $item;
+	}
+	/**
+	 * @param array[] $document
+	 *
+	 * @return array[]
+	 */
+	protected static function objectize_clauses_instances ($document) {
+		if (!$document) {
+			return $document;
+		}
+		if (is_array_indexed($document)) {
+			return array_map([static::class, 'objectize_clauses_instances'], $document);
+		}
+		foreach ($document['clauses'] as &$clause) {
+			$clause['instances'] = (object)$clause['instances'];
+		}
+		return $document;
 	}
 	/**
 	 * @param \cs\Request  $Request
@@ -64,23 +103,6 @@ class Controller {
 		return $hash;
 	}
 	/**
-	 * @param array[] $document
-	 *
-	 * @return array[]
-	 */
-	protected static function objectize_clauses_instances ($document) {
-		if (!$document) {
-			return $document;
-		}
-		if (is_array_indexed($document)) {
-			return array_map([static::class, 'objectize_clauses_instances'], $document);
-		}
-		foreach ($document['clauses'] as &$clause) {
-			$clause['instances'] = (object)$clause['instances'];
-		}
-		return $document;
-	}
-	/**
 	 * @param \cs\Request $Request
 	 *
 	 * @return array|false
@@ -89,12 +111,18 @@ class Controller {
 		$id                = $Request->route_path(1);
 		$Document_template = Document_template::instance();
 		if ($id) {
-			return static::objectize_clauses_instances($Document_template->get($id));
+			return static::prepare_type(
+				static::objectize_clauses_instances($Document_template->get($id)),
+				'template'
+			);
 		}
-		return static::objectize_clauses_instances(
-			$Document_template->get(
-				$Document_template->search()
-			)
+		return static::prepare_type(
+			static::objectize_clauses_instances(
+				$Document_template->get(
+					$Document_template->search()
+				)
+			),
+			'template'
 		);
 	}
 	/**
@@ -106,10 +134,16 @@ class Controller {
 		$id              = $Request->route_path(1);
 		$Clause_template = Clause_template::instance();
 		if ($id) {
-			return $Clause_template->get($id);
+			return static::prepare_type(
+				$Clause_template->get($id),
+				'clause'
+			);
 		}
-		return $Clause_template->get(
-			$Clause_template->search()
+		return static::prepare_type(
+			$Clause_template->get(
+				$Clause_template->search()
+			),
+			'clause'
 		);
 	}
 }
