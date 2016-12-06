@@ -35,7 +35,6 @@ Polymer(
 				@_init_scribe()
 	_document_changed : !->
 		if @scribe_instance && @document.hash != @hash
-			@hash = @document.hash
 			@_set_content(@document.content)
 	_init_scribe : !->
 		if @scribe_instance
@@ -75,6 +74,7 @@ Polymer(
 				)
 		)
 	_set_content : (content) !->
+		@hash = @document.hash
 		@scribe_instance
 			..setContent(content)
 			..undoManager.clearUndo()

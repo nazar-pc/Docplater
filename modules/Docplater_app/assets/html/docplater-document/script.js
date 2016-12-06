@@ -41,7 +41,6 @@
       },
       _document_changed: function(){
         if (this.scribe_instance && this.document.hash !== this.hash) {
-          this.hash = this.document.hash;
           this._set_content(this.document.content);
         }
       },
@@ -74,6 +73,7 @@
       },
       _set_content: function(content){
         var x$;
+        this.hash = this.document.hash;
         x$ = this.scribe_instance;
         x$.setContent(content);
         x$.undoManager.clearUndo();

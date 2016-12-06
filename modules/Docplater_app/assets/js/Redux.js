@@ -7,8 +7,7 @@
  * @license   AGPL-3.0, see license.txt
  */
 (function(){
-  var Immutable, initial_state, Redux, ref$;
-  Immutable = null;
+  var initial_state, previous_state, Redux, ref$;
   initial_state = {
     document: {
       clauses: [],
@@ -18,13 +17,20 @@
     },
     preview: true
   };
+  if (previous_state = localStorage.getItem('redux-state')) {
+    previous_state = JSON.parse(previous_state);
+  }
   Redux = (ref$ = cs.Docplater || (cs.Docplater = {})).Redux || (ref$.Redux = {});
   Redux.store = require(['redux', 'seamless-immutable']).then(function(arg$){
-    var redux, seamlessImmutable;
+    var redux, seamlessImmutable, store;
     redux = arg$[0], seamlessImmutable = arg$[1];
-    Immutable = seamlessImmutable;
-    initial_state = Immutable(initial_state);
-    return redux.createStore(reducer);
+    initial_state = seamlessImmutable(initial_state);
+    previous_state = seamlessImmutable(previous_state);
+    store = redux.createStore(reducer);
+    store.subscribe(function(){
+      localStorage.setItem('redux-state', JSON.stringify(store.getState()));
+    });
+    return store;
   });
   Redux.behavior = Promise.all([Redux.store, require(['polymer-redux'])]).then(function(arg$){
     var store, polymerRedux;
@@ -47,9 +53,10 @@
   }
   function reducer(state, action){
     var parameters, i$, ref$, len$, parameter, clause_index, clause, highlighted_parameter;
-    state == null && (state = initial_state);
+    state == null && (state = previous_state || initial_state);
     switch (action.type) {
     case 'DOCUMENT_NEW':
+      localStorage.removeItem('redux-state');
       return state.set('document', initial_state.document);
     case 'DOCUMENT_LOADED':
       return state.set('document', action.document);

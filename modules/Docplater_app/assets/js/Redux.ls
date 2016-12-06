@@ -5,7 +5,6 @@
  * @copyright Copyright (c) 2016, Nazar Mokrynskyi
  * @license   AGPL-3.0, see license.txt
  */
-Immutable		= null
 initial_state	= {
 	document	:
 		clauses		: []
@@ -14,11 +13,17 @@ initial_state	= {
 		type		: 'document'
 	preview		: true
 }
+if previous_state = localStorage.getItem('redux-state')
+	previous_state	= JSON.parse(previous_state)
 Redux			= cs.{}Docplater.{}Redux
 Redux.store		= require(['redux', 'seamless-immutable']).then ([redux, seamless-immutable]) ->
-	Immutable		:= seamless-immutable
-	initial_state	:= Immutable(initial_state)
-	redux.createStore(reducer)
+	initial_state	:= seamless-immutable(initial_state)
+	previous_state	:= seamless-immutable(previous_state)
+	store	= redux.createStore(reducer)
+	store.subscribe(!->
+		localStorage.setItem('redux-state', JSON.stringify(store.getState()))
+	)
+	store
 Redux.behavior	=
 	Promise.all([
 		Redux.store
@@ -34,9 +39,10 @@ function get_full_parameter_path (state, parameter, clause_hash, clause_instance
 	else
 		['document', 'parameters', parameter]
 
-function reducer (state = initial_state, action)
+function reducer (state = previous_state || initial_state, action)
 	switch action.type
 		when 'DOCUMENT_NEW'
+			localStorage.removeItem('redux-state')
 			state.set('document', initial_state.document)
 		when 'DOCUMENT_LOADED'
 			state.set('document', action.document)
