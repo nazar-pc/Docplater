@@ -99,7 +99,13 @@
     var fire_state_changed, destroyed, x$, y$, this$ = this;
     this.scribe_instance = scribe_instance;
     fire_state_changed = function(){
-      this$.scribe_instance.trigger('scribe:state-changed');
+      if (this$.scribe_instance._ssa_timeout) {
+        return;
+      }
+      this$.scribe_instance._ssa_timeout = setTimeout(function(){
+        delete this$.scribe_instance._ssa_timeout;
+        this$.scribe_instance.trigger('scribe:state-changed');
+      }, 200);
     };
     destroyed = function(){
       var x$, y$;

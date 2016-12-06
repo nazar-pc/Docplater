@@ -74,7 +74,12 @@ function wrap_with_tag (element, tag)
  */
 !function simple_scribe_api (@scribe_instance)
 	fire_state_changed	= !~>
-		@scribe_instance.trigger('scribe:state-changed')
+		if @scribe_instance._ssa_timeout
+			return
+		@scribe_instance._ssa_timeout	= setTimeout (!~>
+			delete @scribe_instance._ssa_timeout
+			@scribe_instance.trigger('scribe:state-changed')
+		), 200
 	destroyed			= !->
 		@scribe_instance.el
 			..removeEventListener('keyup', fire_state_changed)
