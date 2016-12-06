@@ -13,7 +13,8 @@
     document: {
       clauses: [],
       content: '<p></p>',
-      parameters: {}
+      parameters: {},
+      type: 'document'
     },
     preview: true
   };

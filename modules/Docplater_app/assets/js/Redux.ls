@@ -11,6 +11,7 @@ initial_state	= {
 		clauses		: []
 		content		: '<p></p>'
 		parameters	: {}
+		type		: 'document'
 	preview		: true
 }
 Redux			= cs.{}Docplater.{}Redux
