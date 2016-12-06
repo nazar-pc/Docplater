@@ -53,6 +53,8 @@
       return state.set('document', initial_state.document);
     case 'DOCUMENT_LOADED':
       return state.set('document', action.document);
+    case 'DOCUMENT_CONTENT_UPDATE':
+      return state.setIn(['document', 'content'], action.content);
     case 'CLAUSE_ADD_INSTANCE':
       parameters = {};
       for (i$ = 0, len$ = (ref$ = action.clause.parameters).length; i$ < len$; ++i$) {

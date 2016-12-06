@@ -69,7 +69,6 @@ function wrap_with_tag (element, tag)
 	tmp = document.createElement(tag)
 	tmp.appendChild(element)
 	tmp
-#define ->
 /**
  * @param {Scribe} scribe_instance
  */

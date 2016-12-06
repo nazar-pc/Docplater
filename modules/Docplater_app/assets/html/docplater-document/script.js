@@ -63,6 +63,13 @@
           }));
           x$.use(scribePluginTabIndent());
           this$._set_content(this$.document.content);
+          this$.ssa = new cs.Docplater.simple_scribe_api(this$.scribe_instance);
+          this$.ssa.on_state_changed(function(){
+            this$.dispatch({
+              type: 'DOCUMENT_CONTENT_UPDATE',
+              content: this$.scribe_instance.getContent()
+            });
+          });
         });
       },
       _set_content: function(content){

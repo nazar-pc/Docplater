@@ -40,6 +40,8 @@ function reducer (state = initial_state, action)
 			state.set('document', initial_state.document)
 		when 'DOCUMENT_LOADED'
 			state.set('document', action.document)
+		when 'DOCUMENT_CONTENT_UPDATE'
+			state.setIn(['document', 'content'], action.content)
 		when 'CLAUSE_ADD_INSTANCE'
 			parameters	= {}
 			for parameter in action.clause.parameters

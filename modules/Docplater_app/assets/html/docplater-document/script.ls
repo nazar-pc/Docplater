@@ -66,6 +66,13 @@ Polymer(
 					))
 					..use(scribe-plugin-tab-indent())
 				@_set_content(@document.content)
+				@ssa	= new cs.Docplater.simple_scribe_api(@scribe_instance)
+				@ssa.on_state_changed(!~>
+					@dispatch(
+						type	: 'DOCUMENT_CONTENT_UPDATE'
+						content	: @scribe_instance.getContent()
+					)
+				)
 		)
 	_set_content : (content) !->
 		@scribe_instance
