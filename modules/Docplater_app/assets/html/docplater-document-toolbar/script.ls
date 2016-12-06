@@ -87,15 +87,49 @@ Polymer(
 				)
 	_save_new_document_revision : !->
 		document	= @document
-		# TODO: check if there is title already and if it was created from template; probably, just disable/hide button for such cases
+		if document.type != 'document'
+			return
+		if !document.title
+			@_save_new_document()
+			return
 		@_save_document_internal(
 			document
 				.set('parent_hash', document.hash)
 		)
 	_save_new_document_template : !->
-		# TODO
+		document	= @document
+		prompt		= cs.ui.prompt(
+			'New document template name?'
+			(title) !~>
+				@_save_template_internal(
+					document
+						.set('title', title)
+						.set('group_uuid', '')
+						.set('parent_hash', document.hash)
+				)
+		)
+		prompt.input.placeholder	= document.title
+	_save_template_internal : (template) !->
+		cs.api('post api/Docplater_app/templates', template)
+			.then (hash) ->
+				cs.ui.simple_modal('Saved successfully!')
+				cs.api('get api/Docplater_app/templates/' + hash)
+			.then (template) !~>
+				@dispatch(
+					type		: 'DOCUMENT_LOADED'
+					document	: template
+				)
 	_save_new_document_template_revision : !->
-		# TODO
+		document	= @document
+		if document.type != 'template'
+			return
+		if !document.title
+			@_save_new_document_template()
+			return
+		@_save_template_internal(
+			document
+				.set('parent_hash', document.hash)
+		)
 	_inline_tag_toggle : (e) !->
 		@ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'))
 	_heading_tag_toggle : (e) !->

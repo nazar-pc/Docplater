@@ -99,10 +99,47 @@
       _save_new_document_revision: function(){
         var document;
         document = this.document;
+        if (document.type !== 'document') {
+          return;
+        }
+        if (!document.title) {
+          this._save_new_document();
+          return;
+        }
         this._save_document_internal(document.set('parent_hash', document.hash));
       },
-      _save_new_document_template: function(){},
-      _save_new_document_template_revision: function(){},
+      _save_new_document_template: function(){
+        var document, prompt, this$ = this;
+        document = this.document;
+        prompt = cs.ui.prompt('New document template name?', function(title){
+          this$._save_template_internal(document.set('title', title).set('group_uuid', '').set('parent_hash', document.hash));
+        });
+        prompt.input.placeholder = document.title;
+      },
+      _save_template_internal: function(template){
+        var this$ = this;
+        cs.api('post api/Docplater_app/templates', template).then(function(hash){
+          cs.ui.simple_modal('Saved successfully!');
+          return cs.api('get api/Docplater_app/templates/' + hash);
+        }).then(function(template){
+          this$.dispatch({
+            type: 'DOCUMENT_LOADED',
+            document: template
+          });
+        });
+      },
+      _save_new_document_template_revision: function(){
+        var document;
+        document = this.document;
+        if (document.type !== 'template') {
+          return;
+        }
+        if (!document.title) {
+          this._save_new_document_template();
+          return;
+        }
+        this._save_template_internal(document.set('parent_hash', document.hash));
+      },
       _inline_tag_toggle: function(e){
         this.ssa.toggle_selection_wrapping_with_tag(e.target.getAttribute('tag'));
       },

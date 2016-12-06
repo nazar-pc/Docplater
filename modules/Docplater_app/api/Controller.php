@@ -126,6 +126,33 @@ class Controller {
 		);
 	}
 	/**
+	 * @param \cs\Request  $Request
+	 * @param \cs\Response $Response
+	 *
+	 * @return string
+	 *
+	 * @throws \cs\ExitException
+	 */
+	public static function templates_post ($Request, $Response) {
+		$data = $Request->data('title', 'content', 'parameters', 'clauses');
+		if (!$data) {
+			throw new ExitException(400);
+		}
+		$hash = Document_template::instance()->add(
+			@$Request->data['group_uuid'] ?: [],
+			@$Request->data['parent_hash'] ?: [],
+			$data['title'],
+			$data['content'],
+			$data['parameters'],
+			$data['clauses']
+		);
+		if (!$hash) {
+			throw new ExitException(500);
+		}
+		$Response->code = 201;
+		return $hash;
+	}
+	/**
 	 * @param \cs\Request $Request
 	 *
 	 * @return array|false
