@@ -7,9 +7,9 @@ dom-module#docplater-document-toolbar
 			nav(is="cs-nav-dropdown")
 				nav(is="cs-nav-button-group" vertical)
 					button(is="cs-button" type="button" on-tap="_save_new_document") New document
-					button(is="cs-button" type="button" on-tap="_save_new_document_revision") New revision of current document
+					button(is="cs-button" type="button" on-tap="_save_new_document_revision" disabled="[[!equal(document.type, 'document')]]") New revision of current document
 					button(is="cs-button" type="button" on-tap="_save_new_document_template") New document template
-					button(is="cs-button" type="button" on-tap="_save_new_document_template_revision") New revision of current document template
+					button(is="cs-button" type="button" on-tap="_save_new_document_template_revision" disabled="[[!equal(document.type, 'template')]]") New revision of current document template
 			button(is="cs-button" type="button" data-command-name="undo" icon="undo" force-fullsize tooltip="Undo")
 			button(is="cs-button" type="button" data-command-name="redo" icon="repeat" force-fullsize tooltip="Redo")
 			button(is="cs-button" type="button" data-command-name="removeFormat" icon="eraser" force-fullsize tooltip="Remove Formatting")

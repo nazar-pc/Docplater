@@ -12,6 +12,10 @@
       is: 'docplater-document-toolbar',
       behaviors: [reduxBehavior],
       properties: {
+        document: {
+          statePath: 'document',
+          type: Object
+        },
         parameters: {
           statePath: 'document.parameters',
           type: Object
@@ -74,7 +78,7 @@
       },
       _save_new_document: function(){
         var document, prompt, this$ = this;
-        document = this.getState().document;
+        document = this.document;
         prompt = cs.ui.prompt('New document name?', function(title){
           this$._save_document_internal(document.set('title', title).set('group_uuid', '').set('parent_hash', document.hash));
         });
@@ -94,7 +98,7 @@
       },
       _save_new_document_revision: function(){
         var document;
-        document = this.getState().document;
+        document = this.document;
         this._save_document_internal(document.set('parent_hash', document.hash));
       },
       _save_new_document_template: function(){},

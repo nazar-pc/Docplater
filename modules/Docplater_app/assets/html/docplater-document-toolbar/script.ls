@@ -12,6 +12,9 @@ Polymer(
 		redux-behavior
 	]
 	properties		:
+		document		:
+			statePath	: 'document'
+			type		: Object
 		parameters		:
 			statePath	: 'document.parameters'
 			type		: Object
@@ -60,7 +63,7 @@ Polymer(
 			type	: 'DOCUMENT_NEW'
 		)
 	_save_new_document : !->
-		document	= @getState().document
+		document	= @document
 		prompt		= cs.ui.prompt(
 			'New document name?'
 			(title) !~>
@@ -83,7 +86,7 @@ Polymer(
 					document	: document
 				)
 	_save_new_document_revision : !->
-		document	= @getState().document
+		document	= @document
 		# TODO: check if there is title already and if it was created from template; probably, just disable/hide button for such cases
 		@_save_document_internal(
 			document
