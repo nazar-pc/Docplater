@@ -17,6 +17,6 @@ Polymer(
 			for element in @$.content.querySelectorAll('docplater-document-clause')
 				element.outerHTML = '<div class="clause">' + element.shadowRoot.querySelector('#content').innerHTML + '</div>'
 			for element in @$.content.querySelectorAll('docplater-document-parameter')
-				element.outerHTML = '<div class="parameter">' + element.shadowRoot.querySelector('#content').innerHTML + '</div>'
+				element.outerHTML = '<div class="parameter">' + (if element.parameter then element.parameter.display_value else '@' + element.name) + '</div>'
 			print()
 )

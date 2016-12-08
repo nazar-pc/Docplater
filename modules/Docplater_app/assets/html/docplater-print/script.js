@@ -22,7 +22,9 @@
           }
           for (i$ = 0, len$ = (ref$ = this$.$.content.querySelectorAll('docplater-document-parameter')).length; i$ < len$; ++i$) {
             element = ref$[i$];
-            element.outerHTML = '<div class="parameter">' + element.shadowRoot.querySelector('#content').innerHTML + '</div>';
+            element.outerHTML = '<div class="parameter">' + (element.parameter
+              ? element.parameter.display_value
+              : '@' + element.name) + '</div>';
           }
           print();
         });
