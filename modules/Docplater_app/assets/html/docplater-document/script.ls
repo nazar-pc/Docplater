@@ -34,7 +34,7 @@ Polymer(
 				@scopeSubtree(@$.content, true)
 				@_init_scribe()
 	_document_changed : !->
-		if @scribe_instance && @document.hash != @hash
+		if @scribe_instance && (@document.hash != @hash || @document.content == '<p></p>')
 			@_set_content(@document.content)
 	_init_scribe : !->
 		if @scribe_instance

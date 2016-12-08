@@ -40,7 +40,7 @@
         });
       },
       _document_changed: function(){
-        if (this.scribe_instance && this.document.hash !== this.hash) {
+        if (this.scribe_instance && (this.document.hash !== this.hash || this.document.content === '<p></p>')) {
           this._set_content(this.document.content);
         }
       },
