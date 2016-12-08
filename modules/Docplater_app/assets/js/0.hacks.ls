@@ -9,6 +9,7 @@
 document.designMode = "on"
 document.execCommand('enableObjectResizing', false, 'false')
 document.execCommand("enableInlineTableEditing", false, "false")
+document.designMode = "off"
 
 # TODO: is necessary until https://github.com/reactjs/redux/pull/2047 is released
 requirejs.config(

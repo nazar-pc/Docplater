@@ -11,6 +11,7 @@
   document.designMode = "on";
   document.execCommand('enableObjectResizing', false, 'false');
   document.execCommand("enableInlineTableEditing", false, "false");
+  document.designMode = "off";
   requirejs.config({
     packages: [{
       name: 'redux',
