@@ -49,6 +49,9 @@ class Controller {
 	 * @return array[]
 	 */
 	protected static function prepare_type ($item, $type) {
+		if (!$item) {
+			return $item;
+		}
 		if (is_array_indexed($item)) {
 			foreach ($item as &$i) {
 				$i['type'] = $type;
