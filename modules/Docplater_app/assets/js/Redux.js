@@ -15,7 +15,8 @@
       parameters: {},
       type: 'document'
     },
-    preview: true
+    preview: true,
+    force_update: false
   };
   if (previous_state = localStorage.getItem('redux-state')) {
     previous_state = JSON.parse(previous_state);
@@ -57,9 +58,12 @@
     switch (action.type) {
     case 'DOCUMENT_NEW':
       localStorage.removeItem('redux-state');
-      return state.set('document', initial_state.document);
+      return state.set('document', initial_state.document).set('force_update', true);
     case 'DOCUMENT_LOADED':
-      return state.set('document', action.document);
+      return state.set('document', action.document).set('force_update', true);
+    case 'DOCUMENT_UPLOADED':
+      localStorage.removeItem('redux-state');
+      return state.set('document', initial_state.document).setIn(['document', 'content'], action.content).set('force_update', true);
     case 'DOCUMENT_CONTENT_UPDATE':
       return state.setIn(['document', 'content'], action.content);
     case 'CLAUSE_ADD_INSTANCE':
@@ -112,9 +116,9 @@
       parameter = get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance);
       return state.setIn(parameter.concat('value'), action.value);
     case 'PREVIEW_TOGGLE':
-      return state.merge({
-        preview: !state.preview
-      });
+      return state.set('preview', !state.preview);
+    case 'FORCE_UPDATE_TOGGLE':
+      return state.set('force_update', !state.force_update);
     default:
       return state;
     }

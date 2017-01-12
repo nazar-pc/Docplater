@@ -2,6 +2,7 @@ dom-module#docplater-document-toolbar
 	link(rel="import" href="style.css" type="css")
 	template
 		nav#toolbar(is="cs-nav-button-group")
+			button(is="cs-button" type="button" on-tap="_upload" icon="upload" force-fullsize tooltip="Upload docx file")
 			button(is="cs-button" type="button" on-tap="_new_document" icon="file-o" force-fullsize tooltip="New document")
 			button(is="cs-button" type="button" icon="floppy-o" force-fullsize tooltip="Save as")
 			nav(is="cs-nav-dropdown")

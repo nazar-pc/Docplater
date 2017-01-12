@@ -6,12 +6,13 @@
  * @license   AGPL-3.0, see license.txt
  */
 initial_state	= {
-	document	:
+	document		:
 		clauses		: []
 		content		: '<p></p>'
 		parameters	: {}
 		type		: 'document'
-	preview		: true
+	preview			: true
+	force_update	: false
 }
 if previous_state = localStorage.getItem('redux-state')
 	previous_state	= JSON.parse(previous_state)
@@ -43,9 +44,19 @@ function reducer (state = previous_state || initial_state, action)
 	switch action.type
 		when 'DOCUMENT_NEW'
 			localStorage.removeItem('redux-state')
-			state.set('document', initial_state.document)
+			state
+				.set('document', initial_state.document)
+				.set('force_update', true)
 		when 'DOCUMENT_LOADED'
-			state.set('document', action.document)
+			state
+				.set('document', action.document)
+				.set('force_update', true)
+		when 'DOCUMENT_UPLOADED'
+			localStorage.removeItem('redux-state')
+			state
+				.set('document', initial_state.document)
+				.setIn(['document', 'content'], action.content)
+				.set('force_update', true)
 		when 'DOCUMENT_CONTENT_UPDATE'
 			state.setIn(['document', 'content'], action.content)
 		when 'CLAUSE_ADD_INSTANCE'
@@ -95,7 +106,7 @@ function reducer (state = previous_state || initial_state, action)
 			parameter	= get_full_parameter_path(state, action.name, action.clause_hash, action.clause_instance)
 			state.setIn(parameter.concat('value'), action.value)
 		when 'PREVIEW_TOGGLE'
-			state.merge(
-				preview	: !state.preview
-			)
+			state.set('preview', !state.preview)
+		when 'FORCE_UPDATE_TOGGLE'
+			state.set('force_update', !state.force_update)
 		else state

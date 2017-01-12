@@ -1,7 +1,7 @@
 {
 	"package"          : "Docplater_app",
 	"category"         : "modules",
-	"version"          : "0.52.0+build-72",
+	"version"          : "0.53.0+build-73",
 	"description"      : "Main Docplater UI",
 	"author"           : "Nazar Mokrynskyi",
 	"license"          : "AGPL-3.0",
@@ -25,6 +25,7 @@
 		"ramsey/uuid" : "^3.5.1"
 	},
 	"_"                : "lodash is hardcoded because otherwise broken version is installed (see https://github.com/fxpio/composer-asset-plugin/issues/260)",
+	"__"               : "mammoth included in root package.json because of dependencies conflicts",
 	"require_npm"      : {
 		"lodash-amd"                              : "3.5.0",
 		"polymer-redux"                           : "^0.3",

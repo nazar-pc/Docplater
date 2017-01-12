@@ -71,6 +71,35 @@
           element.disabled = !heading_allowed;
         }
       },
+      _upload: function(){
+        var x$, this$ = this;
+        x$ = document.createElement('input');
+        x$.type = 'file';
+        x$.addEventListener('change', function(e){
+          var mammoth_promise, x$;
+          mammoth_promise = require(['/node_modules/mammoth/mammoth.browser.js']);
+          x$ = new FileReader;
+          x$.onload = function(e){
+            var arrayBuffer;
+            arrayBuffer = e.target.result;
+            mammoth_promise.then(function(arg$){
+              var mammoth;
+              mammoth = arg$[0];
+              return mammoth.convertToHtml({
+                arrayBuffer: arrayBuffer
+              });
+            }).then(function(result){
+              this$._new_document();
+              this$.dispatch({
+                type: 'DOCUMENT_UPLOADED',
+                content: result.value
+              });
+            });
+          };
+          x$.readAsArrayBuffer(e.target.files[0]);
+        });
+        x$.click();
+      },
       _new_document: function(){
         this.dispatch({
           type: 'DOCUMENT_NEW'

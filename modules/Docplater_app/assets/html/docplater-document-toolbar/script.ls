@@ -58,6 +58,25 @@ Polymer(
 		)
 		for element in @shadowRoot.querySelectorAll('[heading-tag]')
 			element.disabled	= !heading_allowed
+	_upload : !->
+		document.createElement('input')
+			..type	= 'file'
+			..addEventListener('change', (e) !~>
+				mammoth_promise	= require(['/node_modules/mammoth/mammoth.browser.js'])
+				new FileReader
+					..onload = (e) !~>
+						arrayBuffer = e.target.result
+						mammoth_promise
+							.then ([mammoth]) -> mammoth.convertToHtml({arrayBuffer})
+							.then (result) !~>
+								@_new_document()
+								@dispatch(
+									type	: 'DOCUMENT_UPLOADED'
+									content	: result.value
+								)
+					..readAsArrayBuffer(e.target.files[0])
+			)
+			..click()
 	_new_document : !->
 		@dispatch(
 			type	: 'DOCUMENT_NEW'

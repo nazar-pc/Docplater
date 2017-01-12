@@ -21,6 +21,9 @@ Polymer(
 		scribe_instance	:
 			notify	: true
 			type	: Object
+		force_update	:
+			statePath	: 'force_update'
+			type		: Boolean
 	created : !->
 		@attached_once
 			.then !~>
@@ -34,7 +37,11 @@ Polymer(
 				@scopeSubtree(@$.content, true)
 				@_init_scribe()
 	_document_changed : !->
-		if @scribe_instance && (@document.hash != @hash || @document.content == '<p></p>')
+		if @scribe_instance && (@document.hash != @hash || @force_update)
+			if @force_update
+				@dispatch(
+					type	: 'FORCE_UPDATE_TOGGLE'
+				)
 			@_set_content(@document.content)
 	_init_scribe : !->
 		if @scribe_instance

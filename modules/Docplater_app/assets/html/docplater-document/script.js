@@ -21,6 +21,10 @@
         scribe_instance: {
           notify: true,
           type: Object
+        },
+        force_update: {
+          statePath: 'force_update',
+          type: Boolean
         }
       },
       created: function(){
@@ -40,7 +44,12 @@
         });
       },
       _document_changed: function(){
-        if (this.scribe_instance && (this.document.hash !== this.hash || this.document.content === '<p></p>')) {
+        if (this.scribe_instance && (this.document.hash !== this.hash || this.force_update)) {
+          if (this.force_update) {
+            this.dispatch({
+              type: 'FORCE_UPDATE_TOGGLE'
+            });
+          }
           this._set_content(this.document.content);
         }
       },
