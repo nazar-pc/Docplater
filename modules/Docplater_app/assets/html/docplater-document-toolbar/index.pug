@@ -3,6 +3,11 @@ dom-module#docplater-document-toolbar
 	template
 		nav#toolbar(is="cs-nav-button-group")
 			button(is="cs-button" type="button" on-tap="_upload" icon="upload" force-fullsize tooltip="Upload docx file")
+			button(is="cs-button" type="button" icon="download" force-fullsize tooltip="Download current document as pdf or docx file")
+			nav(is="cs-nav-dropdown")
+				nav(is="cs-nav-button-group" vertical)
+					button(is="cs-button" type="button" on-tap="_download_as_pdf") Download current document as pdf file
+					button(is="cs-button" type="button" on-tap="_download_as_docx" disabled) Download current document as docx file
 			button(is="cs-button" type="button" on-tap="_new_document" icon="file-o" force-fullsize tooltip="New document")
 			button(is="cs-button" type="button" icon="floppy-o" force-fullsize tooltip="Save as")
 			nav(is="cs-nav-dropdown")

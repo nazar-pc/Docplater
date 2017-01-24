@@ -100,6 +100,25 @@
         });
         x$.click();
       },
+      _download_as_pdf: function(){
+        var x$, submit, y$, content, z$, form;
+        x$ = submit = document.createElement('button');
+        x$.type = 'submit';
+        y$ = content = document.createElement('textarea');
+        y$.name = 'content';
+        y$.value = this.getState().document.content;
+        console.log(this.getState().document.content);
+        z$ = form = document.createElement('form');
+        z$.appendChild(content);
+        z$.appendChild(submit);
+        z$.target = '_blank';
+        z$.method = 'post';
+        z$.action = '/Docplater_app/download?type=pdf';
+        document.documentElement.appendChild(form);
+        submit.click();
+        form.parentNode.removeChild(form);
+      },
+      _download_as_docx: function(){},
       _new_document: function(){
         this.dispatch({
           type: 'DOCUMENT_NEW'

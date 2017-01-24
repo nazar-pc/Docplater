@@ -77,6 +77,23 @@ Polymer(
 					..readAsArrayBuffer(e.target.files[0])
 			)
 			..click()
+	_download_as_pdf : !->
+		submit	= document.createElement('button')
+			..type	= 'submit'
+		content	= document.createElement('textarea')
+			..name	= 'content'
+			..value	= @getState().document.content
+		console.log @getState().document.content
+		form	= document.createElement('form')
+			..appendChild(content)
+			..appendChild(submit)
+			..target	= '_blank'
+			..method	= 'post'
+			..action	= '/Docplater_app/download?type=pdf'
+		document.documentElement.appendChild(form)
+		submit.click()
+		form.parentNode.removeChild(form)
+	_download_as_docx : !->
 	_new_document : !->
 		@dispatch(
 			type	: 'DOCUMENT_NEW'
